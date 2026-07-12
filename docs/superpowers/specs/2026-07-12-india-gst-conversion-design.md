@@ -148,7 +148,7 @@ Currency defaults flip GBP → INR. VAT columns and the subscription module stay
 
 **RLS:** every new table gets `ENABLE ROW LEVEL SECURITY` + policies in the same migration that creates it, matching existing `*RlsWritePolicies` patterns. `account_groups` global rows are read-only reference data.
 
-**Testing (targeted improvement):** add Vitest to the backend scoped to the new pure-logic units only — format adapters, return builders, report calculators — driven by fixture files (real Tally XML exports, golden GSTR JSON outputs) plus the Tally round-trip test. No e2e framework; no retrofitting tests onto existing code. Everything else verifies per existing convention (`npm run build`, manual dev-server flows).
+**Testing (targeted improvement):** add Vitest scoped to the new pure-logic units only — backend (adapters, builders, calculators) plus the frontend GSTIN validator introduced in workstream E — format adapters, return builders, report calculators — driven by fixture files (real Tally XML exports, golden GSTR JSON outputs) plus the Tally round-trip test. No e2e framework; no retrofitting tests onto existing code. Everything else verifies per existing convention (`npm run build`, manual dev-server flows).
 
 ## Open items (do not block implementation planning)
 
