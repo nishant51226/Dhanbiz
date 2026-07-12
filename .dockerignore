@@ -1,0 +1,16 @@
+.git
+.gitignore
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+backend/dist
+frontend/dist
+**/*.md
+# Docusaurus user guide (backend/3khelp) — must ship .md docs into the web image
+!backend/3khelp/docs/
+!backend/3khelp/docs/**
+**/*.mdx
+!backend/3khelp/docs/**
+!backend/3khelp/src/pages/**
+.DS_Store

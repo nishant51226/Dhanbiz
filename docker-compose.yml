@@ -1,0 +1,115 @@
+# docp stack: nginx (UI + /api proxy) | backend | ollama (internal only)
+#
+# Deploy: point TLS reverse proxy (Caddy, Traefik, cloud LB) at port 80.
+#   https://your-domain/       → static UI
+#   https://your-domain/api/   → backend (Ollama only reachable inside this network)
+#   https://your-domain/document/ → Docusaurus user guide (static files in web/nginx image)
+#   WebSocket /socket.io/      → backend (live notification bell)
+#
+# Ollama models: persisted in volume `ollama-data`, pulled at start from OLLAMA_MODELS (comma-separated).
+# Add models: extend OLLAMA_MODELS in .env and recreate ollama, or docker exec ollama ollama pull <name>
+# Then: docker compose up -d --build
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - docp-internal
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-docp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-docp}
+      POSTGRES_DB: ${POSTGRES_DB:-docp}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: docp-ollama:local
+    pull_policy: build
+    build:
+      context: ${OLLAMA_DOCKER_CONTEXT:-./docker/ollama}
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - docp-internal
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MODELS: ${OLLAMA_MODELS:-qwen2.5vl:3b,qwen2.5:3b}
+      OLLAMA_SKIP_PULL: ${OLLAMA_SKIP_PULL:-0}
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
+      start_period: 600s
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    networks:
+      - docp-internal
+    environment:
+      PORT: "3000"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-docp}:${POSTGRES_PASSWORD:-docp}@postgres:5432/${POSTGRES_DB:-docp}
+      FILE_STORAGE_ROOT: /data/files
+      AI_PROVIDER_DEFAULT: ${AI_PROVIDER_DEFAULT:-ollama}
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_VISION_MODEL: ${OLLAMA_VISION_MODEL:-qwen2.5vl:3b}
+      OLLAMA_STRUCTURE_MODEL: ${OLLAMA_STRUCTURE_MODEL:-qwen2.5:3b}
+      OLLAMA_STRUCTURE_NUM_CTX: ${OLLAMA_STRUCTURE_NUM_CTX:-32768}
+      OLLAMA_STRUCTURE_NUM_PREDICT: ${OLLAMA_STRUCTURE_NUM_PREDICT:-8192}
+      OLLAMA_STRUCTURE_TEMPERATURE: ${OLLAMA_STRUCTURE_TEMPERATURE:-0}
+      OLLAMA_STRUCTURE_FORMAT: ${OLLAMA_STRUCTURE_FORMAT:-}
+      OLLAMA_FETCH_TIMEOUT_MS: ${OLLAMA_FETCH_TIMEOUT_MS:-900000}
+      PDF_PAGE_MIN_TEXT_CHARS: ${PDF_PAGE_MIN_TEXT_CHARS:-50}
+      PDF_MAX_PAGES: ${PDF_MAX_PAGES:-}
+      STRUCTURE_MAX_CHARS: ${STRUCTURE_MAX_CHARS:-}
+      UPLOAD_MAX_BYTES: ${UPLOAD_MAX_BYTES:-104857600}
+      AUTH_USERNAME: ${AUTH_USERNAME:-}
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-}
+      AUTH_SECRET: ${AUTH_SECRET:-}
+      AUTH_ACCESS_TOKEN_TTL_SEC: ${AUTH_ACCESS_TOKEN_TTL_SEC:-900}
+      AUTH_REFRESH_TOKEN_TTL_SEC: ${AUTH_REFRESH_TOKEN_TTL_SEC:-604800}
+      AUTH_TOKEN_TTL_SEC: ${AUTH_TOKEN_TTL_SEC:-604800}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_VISION_MODEL: ${OPENAI_VISION_MODEL:-gpt-4o}
+      OPENAI_STRUCTURE_MODEL: ${OPENAI_STRUCTURE_MODEL:-gpt-4o-mini}
+      AWS_REGION: ${AWS_REGION:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+      BEDROCK_VISION_MODEL: ${BEDROCK_VISION_MODEL:-}
+      BEDROCK_STRUCTURE_MODEL: ${BEDROCK_STRUCTURE_MODEL:-}
+    volumes:
+      - "${FILES_HOST_PATH:-/root/docp/files}:/data/files"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - "${DOC_PUBLISH_PORT:-80}:80"
+    restart: unless-stopped
+    networks:
+      - docp-internal
+    depends_on:
+      - backend
+
+networks:
+  docp-internal:
+    driver: bridge
+
+volumes:
+  ollama-data:
+  postgres-data:

@@ -1,0 +1,43 @@
+# Ollama only (VPS). Models persist in Docker volume `ollama-data`.
+#
+# Default pulls (comma-separated): OLLAMA_MODELS=qwen2.5vl:3b,qwen2.5:3b
+# Add more later:
+#   1) Set OLLAMA_MODELS in .env (see .env.compose.example) and: docker compose -f docker-compose.ollama.yml up -d
+#   2) Or: docker exec -it docp-ollama ollama pull glm-ocr
+#
+# Skip pulls on start (models only via exec): OLLAMA_SKIP_PULL=1
+#
+# From repo root (same folder as this file):
+#   docker compose -f docker-compose.ollama.yml up -d --build
+#
+# Build context must contain Dockerfile + entrypoint.sh. Default: ./docker/ollama (full repo).
+# If you only have ./ollama next to this file, set in .env:
+#   OLLAMA_DOCKER_CONTEXT=./ollama
+# Or: mkdir -p docker && mv ollama docker/ollama
+
+services:
+  ollama:
+    image: docp-ollama:local
+    pull_policy: build
+    build:
+      context: ${OLLAMA_DOCKER_CONTEXT:-./docker/ollama}
+      dockerfile: Dockerfile
+    container_name: docp-ollama
+    restart: unless-stopped
+    ports:
+      - "${OLLAMA_BIND:-127.0.0.1}:11434:11434"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MODELS: ${OLLAMA_MODELS:-qwen2.5vl:3b,qwen2.5:3b}
+      OLLAMA_SKIP_PULL: ${OLLAMA_SKIP_PULL:-0}
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
+      start_period: 600s
+
+volumes:
+  ollama-data:

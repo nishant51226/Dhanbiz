@@ -1,0 +1,29 @@
+{
+  "rules": {
+    "typescript:S3776": {
+      "level": "on",
+      "parameters": {
+        "threshold": "50"
+      }
+    },
+    "typescript:S2004": { "level": "off" },
+    "typescript:S3358": { "level": "off" },
+    "typescript:S6759": { "level": "off" },
+    "typescript:S7764": { "level": "off" },
+    "typescript:S7735": { "level": "off" },
+    "typescript:S6772": { "level": "off" },
+    "typescript:S6754": { "level": "off" },
+    "typescript:S1874": { "level": "off" },
+    "typescript:S7718": { "level": "off" },
+    "typescript:S2871": { "level": "off" },
+    "typescript:S4043": { "level": "off" },
+    "typescript:S4165": { "level": "off" },
+    "typescript:S3923": { "level": "off" },
+    "typescript:S6644": { "level": "off" },
+    "typescript:S6606": { "level": "off" },
+    "typescript:S7773": { "level": "off" },
+    "typescript:S7781": { "level": "off" },
+    "typescript:S7755": { "level": "off" },
+    "typescript:S4624": { "level": "off" }
+  }
+}

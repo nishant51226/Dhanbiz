@@ -1,0 +1,90 @@
+[
+  {
+    "id": "043b54ae-b955-4202-8bf6-51577a4cdafe",
+    "name": "Confirmation Statement Filing",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "360fca74-5784-49b5-bf04-2e38e1a7c871",
+    "name": "dormant",
+    "description": null,
+    "price": 150.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "6258df12-f46d-4ac5-ab9d-d32e11470baf",
+    "name": "1 Personal Tax Return",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "6ead3dde-4335-4f01-9409-2f2e8ccbdd7a",
+    "name": "Annual Accounts Preparation",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "6f9275c4-80cf-4e45-a7af-51bc613b0001",
+    "name": "VAT & PAYE Registration",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "9eca5d85-c500-4e7f-b4bf-cb8aae793142",
+    "name": "Basic Email Support",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "bea1be28-4ff1-4122-b181-db9e1f42abb5",
+    "name": "Corporation Tax Return (CT600)",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "ce56ba7f-93ff-42e3-9945-786111a1645d",
+    "name": "Quarterly Bookkeeping",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "f1d410eb-ea61-4669-8cf5-0d66ec3646a4",
+    "name": "Auto-Enrolment Support",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "f3806833-e834-4af2-ae28-b4771e777976",
+    "name": "Quarterly Financial Update Call",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  },
+  {
+    "id": "f5a3b2ac-ab67-4962-896b-97dd470a6904",
+    "name": "Clear Accounts Summary With Full Commentary",
+    "description": null,
+    "price": 0.00,
+    "is_active": true,
+    "is_included": true
+  }
+]

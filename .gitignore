@@ -1,0 +1,19 @@
+node_modules
+*.tsbuildinfo
+dist
+backend/dist
+.env
+.env.local
+.env.test
+*.log
+.DS_Store
+
+# Uploaded / generated files
+backend/data/files/
+backend/config/firebase-admin.json
+
+# Playwright
+.playwright/
+playwright-results/
+playwright-report/
+test-results/

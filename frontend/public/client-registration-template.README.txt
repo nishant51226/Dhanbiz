@@ -1,0 +1,55 @@
+client-registration-template.pdf
+================================
+
+Version: bump this note when you replace the file so support knows which layout is live.
+
+Purpose
+-------
+Master AcroForm PDF for "Client Registration" downloads. The app fills these fields and
+flattens the PDF on download. Replace this file with your branded PDF from design **only
+if** the AcroForm field names match (or update src/utils/onboardingPdfAcroformMap.ts).
+
+Regenerate dev placeholder
+------------------------
+From the frontend folder:
+
+  npm run generate:pdf-template
+
+Field names (text)
+------------------
+company_name, director_name, nature_of_business, business_address, city, postcode,
+phone, email, company_registration_number, year_end, utr, vat_number, vat_quarter,
+paye_ref, payroll_employee_count, payroll_frequency, ni_number, cis_reference,
+director2_name, director2_address, director2_city, director2_postcode,
+additional_directors (multiline), agent_name, agent_address, agent_postcode, agent_phone,
+agent_code_sa, agent_code_ct, client_reference, bank_account_holder, bank_account_number,
+bank_sort_code, bank_address, sig_cr_name, sig_cr_position, sig_cr_date, sig_cr_signature,
+sig_648_name, sig_648_date, sig_648_signature, sig_co_name, sig_co_date, sig_co_signature,
+sig_dd_name, sig_dd_date, sig_dd_signature
+
+Field names (checkboxes)
+------------------------
+bt_limited_company, bt_sole_trader, bt_partnership, bt_llp, bt_charity, bt_other
+svc_bookkeeping, svc_vat, svc_quarterly_reports, svc_year_end_accounts,
+svc_personal_tax_return, svc_other, svc_payroll
+auth_self_assessment, auth_partnership, auth_trust, auth_vat, auth_paye
+office_id_passport, office_id_driving, office_addr_utility, office_addr_bank
+
+When your PDF uses different internal names (e.g. Text1, Text2)
+-----------------------------------------------------------------
+Run the app in dev, click Download PDF, open the browser console and expand
+"[pdf-fill] AcroForm fields in loaded template" — copy each `name` value.
+
+Then edit `src/utils/onboardingPdfAcroformMap.ts` and set `PDF_ACROFORM_NAME_OVERRIDES`,
+for example:
+
+  company_name: "Text1",
+  director_name: "Text2",
+
+Use the canonical key on the left (from the lists above) and your PDF's exact `name`
+on the right.
+
+QA
+--
+After replacing the template, open the downloaded PDF in Adobe Acrobat Reader and the
+browser viewer to confirm fields appear and text is not clipped.

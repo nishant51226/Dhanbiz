@@ -1,0 +1,51 @@
+[
+  {
+    "id": "2d4b4e72-669a-43f0-9522-7789351fa8ed",
+    "name": "Growth",
+    "billing_cycle": "monthly",
+    "max_turnover": null,
+    "is_active": true
+  },
+  {
+    "id": "3249b3b5-c7d6-4347-b4af-f09e325c9fbc",
+    "name": "Yearly Solo/Partner  Subscription",
+    "billing_cycle": "yearly",
+    "max_turnover": null,
+    "is_active": false
+  },
+  {
+    "id": "3b7bcd3b-b6fe-438b-9cda-9dfbdf80b53b",
+    "name": "Proactive",
+    "billing_cycle": "monthly",
+    "max_turnover": null,
+    "is_active": true
+  },
+  {
+    "id": "6d87a7dd-5f1e-43b8-ab0e-cbd28cdafd9d",
+    "name": "Growth",
+    "billing_cycle": "monthly",
+    "max_turnover": null,
+    "is_active": false
+  },
+  {
+    "id": "93541dca-12b7-4c2d-8616-cfafbdc613ec",
+    "name": "Limited Annual Subscription",
+    "billing_cycle": "yearly",
+    "max_turnover": null,
+    "is_active": false
+  },
+  {
+    "id": "bd15d219-74d5-4143-838b-acf6090aea2f",
+    "name": "Essential",
+    "billing_cycle": "monthly",
+    "max_turnover": 550000.00,
+    "is_active": true
+  },
+  {
+    "id": "e09316b6-a290-40b6-b88b-e1d4c1bf8c99",
+    "name": "test",
+    "billing_cycle": "yearly",
+    "max_turnover": 1000.00,
+    "is_active": false
+  }
+]

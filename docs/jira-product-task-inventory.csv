@@ -1,0 +1,160 @@
+Module,Layer,Summary,Description,SuggestedIssueType
+Platform / Infra,Backend,Health check endpoint,"GET /health (or root health) for uptime and orchestration probes.",Task
+Platform / Infra,Backend,PostgreSQL TypeORM configuration,"App database connection with pool tuning (DB_POOL_MAX, idle, connect timeouts).",Task
+Platform / Infra,Backend,Database migrations runner,"Migrations defined in app.module; run via dedicated migrate script (not auto on boot).",Task
+Platform / Infra,Backend,Row-level security tenant interceptor,"Global RlsTenantInterceptor sets tenant context for scoped queries.",Task
+Platform / Infra,Backend,S3 module integration,"Shared S3 client/module for uploads and object storage.",Task
+Platform / Infra,Backend,pg-boss job queue wiring,"QueueService enqueues extraction jobs; cancel/requeue flows.",Task
+Platform / Infra,Infra,Docker Compose stacks,"docker-compose.yml and docker-compose-without-olama.yml for local/proxy services.",Task
+Auth,Backend,JWT auth guard,"Bearer JWT validation on protected routes.",Task
+Auth,Backend,Login and signup API,"POST /auth/login, POST /auth/signup; session establishment.",Story
+Auth,Backend,Current user and auth status,"GET /auth/me, GET /auth/status for client bootstrap.",Task
+Auth,Backend,Permissions guard and decorators,"PermissionResource, RequirePermission, PermissionsGuard integration.",Story
+Auth,Backend,Staff customer assignments,"User-to-customer assignment for multi-tenant staff access.",Story
+Auth,Frontend,Auth context and JWT handling,"AuthProvider, token storage, refresh of user claims.",Story
+Auth,Frontend,Login page UI,"LoginPage: credentials entry and error handling.",Task
+Auth,Frontend,Route guards (RequireAuth),"Protected layout wrapper for authenticated routes.",Task
+Auth,Frontend,Permission-aware UI (Can component),"Can.tsx and permission checks for conditional UI.",Task
+Auth,Frontend,Staff landing and home redirect,"staffLanding, HomeRedirect, staffHomePath for role-based default route.",Story
+Auth,Frontend,Customer vs staff route guards,"StaffCustomerReadRoute, StaffCustomerWriteRoute, StaffJobsRoute, StaffCustomerDriveRoute, StaffSettingsGuard, AdminDashboardRoute, etc.",Story
+Admin,Backend,Admin users CRUD API,"GET/POST /admin/users, PATCH /admin/users/:id.",Story
+Admin,Backend,Admin user customer assignments,"GET/POST /admin/users/:id/customer-assignments.",Story
+Admin,Backend,Admin roles CRUD API,"GET/POST/PATCH/DELETE /admin/roles; GET /admin/roles/:id.",Story
+Admin,Backend,Permission catalog endpoint,"GET /admin/roles/permission-catalog for UI matrix.",Task
+Admin,Frontend,Staff settings users page,"StaffSettingsUsersPage: manage users (admin-only route).",Story
+Admin,Frontend,Roles settings page,"RolesSettingsPage: roles and permissions configuration UI.",Story
+Admin,Frontend,Admin dashboard page,"AdminDashboardPage with dashboard:read gate.",Story
+Admin,Frontend,MUI admin theme and provider,"muiAdminTheme, AppMuiProvider for staff UI.",Task
+Admin,Frontend,Admin layout and view switcher,"AdminStaffLayout, ViewSwitcher, PageActions, PageLayout.",Story
+Customers (core),Backend,Customers nestjsx CRUD,"List/get/create/patch/delete customers with permission checks.",Story
+Customers (core),Backend,Customer create hook,"CustomersService.createOne override for post-create behaviour.",Task
+Customers (core),Backend,Customer export catalog,"GET /customers/summary-export-catalog for column definitions.",Task
+Customers (core),Backend,Customer wide export GET,"GET /customers/:id/export CSV/XLSX two-row key/value export.",Story
+Customers (core),Backend,Customer wide export POST,"POST /customers/:id/export with optional column selection.",Story
+Customers (core),Backend,Customer summary export preview,"POST /customers/:id/summary-export-preview.",Task
+Customers (core),Backend,Customer summary export file,"POST /customers/:id/summary-export CSV/XLSX.",Story
+Customers (core),Backend,Customers page with submission data,"GET /customers/page-with-submission-data for list enrichment.",Story
+Customers (core),Backend,Customers list export,"POST /customers/export-list and export-list-preview.",Story
+Customers (core),Backend,Company lookup API,"GET /company-lookup (Companies House or similar integration).",Task
+Customers (core),Backend,Customer financials invoices,"GET /customers/:customerId/invoices and invoice by id.",Story
+Customers (core),Backend,Customer financials statements,"GET /customers/:customerId/statements and statement by id.",Story
+Customers (core),Backend,Customer portal user provisioning,"POST /customers/:customerId/portal-user; GET portal-user/roles.",Story
+Customers (forms),Backend,Form submission statuses,"POST /customers/form-submission-statuses.",Task
+Customers (forms),Backend,Latest form submissions,"GET /customers/:customerId/form-submissions/latest.",Task
+Customers (forms),Backend,Create form submission,"POST /customers/:customerId/form-submissions.",Story
+Customers (forms),Backend,Patch form submission,"PATCH /customers/:customerId/form-submissions/:submissionId.",Story
+Customers (forms),Backend,Signature email request,"POST …/form-submissions/:submissionId/signature-email-request.",Task
+Customers (forms),Backend,Customer onboarding S3 / Docuseal integration,"Onboarding HTML/PDF pipeline services (blobs signatures).",Epic
+Customer portal,Backend,Portal document content stream,"GET /customer-portal/:customerId/documents/:documentId/content.",Task
+Customer portal,Backend,Portal library S3 upload init/complete,"POST …/library/:kind/upload-s3/init and …/complete.",Story
+Customer portal,Backend,Portal invoices library tree,"GET …/invoices/library, folders, folder documents, suppliers.",Story
+Customer portal,Backend,Portal invoices supplier upload,"POST …/invoices/upload-for-supplier.",Story
+Customer portal,Backend,Portal statements library tree,"GET …/statements/library, folders, documents, suppliers.",Story
+Customer portal,Backend,Portal statements supplier upload,"POST …/statements/upload-for-supplier.",Story
+Customer portal,Backend,Portal files library tree,"GET …/files/library, folders, documents, suppliers.",Story
+Customer portal,Backend,Portal files supplier upload,"POST …/files/upload-for-supplier.",Story
+Customer portal,Backend,Portal job enqueue from upload,"Customer portal service enqueues extraction after upload.",Task
+Files,Backend,Files nestjsx CRUD,"Standard CRUD for File entity.",Task
+Files,Backend,Multipart upload and job creation,"POST /files/upload in upload.controller with extraction enqueue.",Story
+Files,Backend,Direct S3 upload init/complete,"POST /files/upload-s3/init and upload-s3/complete.",Story
+Files,Backend,File content download,"GET /files/:id/content.",Task
+Documents (library),Backend,Document upload (multipart),"POST /documents/upload.",Story
+Documents (library),Backend,Document S3 upload init/complete,"POST /documents/upload-s3/init and complete.",Story
+Documents (library),Backend,Documents list and detail,"GET /documents, GET /documents/:id.",Story
+Documents (library),Backend,Document content,"GET /documents/:id/content.",Task
+Documents (library),Backend,Document assignees,"GET/POST /documents/:id/assignees; GET assignee-candidates.",Story
+Documents (library),Backend,Document linked jobs,"GET /documents/:id/jobs.",Task
+Jobs,Backend,Jobs list and get (nestjsx),"getMany/getOne with tenant-aware filtering and search.",Story
+Jobs,Backend,Jobs by file,"GET /jobs/by-file/:fileId for drive file drill-down.",Task
+Jobs,Backend,Job counts by status,"GET /jobs/counts-by-status for dashboard aggregates.",Task
+Jobs,Backend,Job AI cost summary,"GET /jobs/:id/cost using AiExecutionsService.",Task
+Jobs,Backend,Cancel job,"POST /jobs/:id/cancel via queue.",Task
+Jobs,Backend,Requeue failed/cancelled job,"POST /jobs/:id/requeue.",Task
+Jobs,Backend,Patch job AI config,"PATCH /jobs/:id for prompts/models/provider when job editable.",Story
+Jobs,Backend,Human-in-the-loop extraction patch,"PATCH /jobs/:id/extraction-result for completed financial pipeline.",Story
+Extraction / AI,Backend,Financial extraction pipeline,"ExtractPipelineService orchestrates vision/structure pipeline.",Epic
+Extraction / AI,Backend,Extraction persistence,"ExtractionPersistenceService writes segments and financial documents.",Story
+Extraction / AI,Backend,AI executions and pricing,"AiExecutionsService; AiPricingEntity tracking.",Story
+Extraction / AI,Backend,AI pricing admin API,"GET/POST/PATCH /ai-pricing.",Story
+Extraction / AI,Backend,AI provider factory,"OpenAI, Bedrock, Ollama, HuggingFace provider adapters.",Story
+Extraction / AI,Backend,Legacy extract endpoint,"POST extract (legacy-extract.controller).",Task
+Extraction / AI,Backend,Legacy OCR endpoint,"POST ocr (legacy-extract.controller).",Task
+Extraction / AI,Backend,Extract config endpoint,"GET /config/extract for frontend presets.",Task
+Docuseal,Backend,Docuseal webhook controller,"GET/POST /webhooks/docuseal for signature events.",Story
+Docuseal,Backend,Docuseal module services,"Template/prefill integration with onboarding.",Story
+Subscription (matrix),Backend,Recommend subscription plans,"POST /subscriptions/recommend.",Task
+Subscription (matrix),Backend,List subscription matrix plans,"GET /subscriptions.",Task
+Subscription (matrix),Backend,Subscription plan detail,"GET /subscriptions/:planId.",Task
+Subscription (matrix),Backend,Create subscription plan,"POST /subscriptions.",Story
+Subscription (matrix),Backend,Update subscription plan,"PUT/PATCH /subscriptions/:planId.",Story
+Subscription (matrix),Backend,List services catalog,"GET /subscriptions/services.",Task
+Subscription (matrix),Backend,Link service to plan,"POST /subscriptions/services/plans/:planId/link.",Task
+Subscription (matrix),Backend,Create service on plan,"POST /subscriptions/services/plans/:planId/create.",Task
+Subscription (matrix),Backend,Unlink plan service,"DELETE /subscriptions/services/links/:planServiceId.",Task
+Subscription plans (legacy),Backend,Subscription plans CRUD,"POST/GET/PATCH/DELETE /subscription-plans including by-turnover.",Story
+Frontend shell,UI,App router and nested routes,"App.tsx: full route map for staff and customer workspace.",Epic
+Frontend shell,UI,Auth layout router,"AuthLayoutRouter for staff vs customer layouts.",Task
+Frontend shell,UI,App layout and staff settings layout,"AppLayout, StaffSettingsLayout.",Task
+Frontend shell,UI,Theme context and toggle,"ThemeContext, ThemeToggle.",Task
+Frontend shell,UI,API client,"api/client.ts typed requests and error handling.",Story
+Customers UI,UI,Customers list page,"CustomersPage: table filters actions.",Story
+Customers UI,UI,New customer / onboarding editor route,"NewCustomerPage for create and /onboarding edit.",Story
+Customers UI,UI,Onboarding HTML preview page,"OnboardingHtmlPreviewPage.",Task
+Customers UI,UI,Customers export page,"CustomersExportPage with modal flow.",Story
+Customers UI,UI,Customers export modal,"CustomersExportModal: column selection and download.",Story
+Customers UI,UI,Customer detail export modal,"CustomerDetailExportModal.",Task
+Customer workspace UI,UI,Customer workspace layout and nav,"CustomerWorkspaceLayout, customerWorkspaceContext.",Story
+Customer workspace UI,UI,Customer workspace dashboard,"CustomerWorkspaceDashboardPage.",Task
+Customer workspace UI,UI,Customer details tab,"CustomerDetailsPage.",Story
+Customer workspace UI,UI,Customer subscription tab,"CustomerSubscriptionPage; workspace subscription gate.",Story
+Customer workspace UI,UI,Customer users tab,"CustomerUsersPage.",Story
+Customer workspace UI,UI,Customer forms tab,"CustomerFormsPage.",Story
+Customer workspace UI,UI,Customer library documents tab,"CustomerLibraryDocumentsPage.",Story
+Customer workspace UI,UI,Customer jobs tab,"CustomerJobsPage.",Task
+Customer workspace UI,UI,Customer settings tab,"CustomerSettingsPage.",Task
+Customer workspace UI,UI,Customer drive (files tree),"CustomerDrivePage with portal library integration.",Epic
+Customer workspace UI,UI,File detail page,"FileDetailPage with previews and job linkage.",Story
+Customer workspace UI,UI,Invoice detail page,"InvoiceDetailPage.",Story
+Customer workspace UI,UI,Statement detail page,"StatementDetailPage.",Story
+Onboarding UI,UI,Customer onboarding wizard shell,"CustomerOnboardingWizard: step flow and state.",Epic
+Onboarding UI,UI,Client registration form,"ClientRegistrationForm.",Story
+Onboarding UI,UI,Direct debit form,"DirectDebitForm.",Story
+Onboarding UI,UI,HMRC 64-8 authorisation form,"Hmrc648AuthorisationForm.",Story
+Onboarding UI,UI,Change of accountant form,"ChangeOfAccountantForm.",Story
+Onboarding UI,UI,Final review and signature step,"finalreviewandsignature.tsx.",Story
+Onboarding UI,UI,Onboarding signature capture,"OnboardingSignatureBlock.",Task
+Onboarding UI,UI,Business type modal,"BussinessTypeModal.",Task
+Onboarding UI,UI,Onboarding field styles,"fieldStyles shared tokens.",Task
+Onboarding / export util,UI,Onboarding HTML templates,"onboardingHtmlTemplate, hmrc648HtmlTemplate, directDebitHtmlTemplate.",Story
+Onboarding / export util,UI,Onboarding export PDF pipeline,"onboardingExportPdf, sections, form model, filename utils.",Epic
+Onboarding / export util,UI,Docuseal prefill from onboarding,"docusealPrefillFromOnboarding mapping.",Story
+Onboarding / export util,UI,Signing gate logic,"onboardingSigningGate.",Task
+Jobs & documents UI,UI,Global jobs list,"JobsPage.",Story
+Jobs & documents UI,UI,New job page,"NewJobPage.",Story
+Jobs & documents UI,UI,Job detail page,"JobDetailPage: status results cost controls.",Epic
+Jobs & documents UI,UI,Documents / files library page,"DocumentsPage.",Story
+Jobs & documents UI,UI,Library document detail,"LibraryDocumentPage.",Story
+Jobs & documents UI,UI,Upload dialog,"UploadDialog.",Story
+Jobs & documents UI,UI,Folder upload button,"FolderUploadButton.",Task
+Jobs & documents UI,UI,PDF.js page range preview,"PdfJsPageRangePreview.",Task
+Jobs & documents UI,UI,Original file preview,"OriginalFilePreview.",Task
+Jobs & documents UI,UI,Results tabs,"ResultsTabs for extraction output.",Task
+Jobs & documents UI,UI,Job financial review panel,"JobFinancialReviewPanel.",Story
+Jobs & documents UI,UI,List controls component,"ListControls.",Task
+Jobs & documents UI,UI,Job status chip,"JobStatusChip.",Task
+Portal UI components,UI,Portal library tree,"PortalLibraryTree.",Story
+Portal UI components,UI,Portal Miller columns library,"PortalMillerLibrary.",Task
+Portal UI components,UI,Portal upload library picker modal,"PortalUploadLibraryPickerModal.",Task
+Portal UI components,UI,Portal supplier upload modal,"PortalSupplierUploadModal.",Task
+Portal UI components,UI,Portal tree to admin documents util,"portalTreeToAdminDocuments.",Task
+Subscriptions UI,UI,Subscription management page,"SubscriptionManagementPage: list and manage matrix plans.",Epic
+Subscriptions UI,UI,Staff add subscription plan,"StaffAddSubscriptionPage.",Story
+Subscriptions UI,UI,Staff edit subscription plan,"StaffEditSubscriptionPage.",Story
+Subscriptions UI,UI,Add subscription form component,"AddSubscription.tsx large form for plan matrix features.",Epic
+Subscriptions UI,UI,Subscription plan UI helpers,"subscriptionPlanUi, subscriptionPlanActive.",Task
+Staff settings UI,UI,Staff settings basic information,"StaffSettingsBasicPage.",Story
+Types & constants,UI,Shared API types,"types/api.ts alignment with backend DTOs.",Task
+Types & constants,UI,Extract document presets,"extractDocumentPresets constants.",Task
+Types & constants,UI,JWT claims helpers,"jwtClaims.",Task
+Types & constants,UI,Roles matrix util,"rolesMatrix.",Task
+Customer portal nav,UI,Customer workspace nav config,"customerWorkspaceNav.",Task

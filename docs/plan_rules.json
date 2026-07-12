@@ -1,0 +1,58 @@
+[
+  {
+    "id": "0c5f530e-1907-4f6f-94be-cf1c1574cacc",
+    "plan_id": "3249b3b5-c7d6-4347-b4af-f09e325c9fbc",
+    "extendable": false,
+    "increment_step": 0.00,
+    "increment_cost": 0.00
+  },
+  {
+    "id": "1be61506-70e5-4dfe-b544-bf76aff14489",
+    "plan_id": "2d4b4e72-669a-43f0-9522-7789351fa8ed",
+    "extendable": true,
+    "increment_step": 10000.00,
+    "increment_cost": 10.00
+  },
+  {
+    "id": "342a200d-3a46-4fed-8b9c-bd368d4c71a9",
+    "plan_id": "3b7bcd3b-b6fe-438b-9cda-9dfbdf80b53b",
+    "extendable": true,
+    "increment_step": 100000.00,
+    "increment_cost": 10.00
+  },
+  {
+    "id": "97e8a8bf-82d6-4f59-b31c-5977c0ec80b3",
+    "plan_id": "6d87a7dd-5f1e-43b8-ab0e-cbd28cdafd9d",
+    "extendable": true,
+    "increment_step": 10000.00,
+    "increment_cost": 0.00
+  },
+  {
+    "id": "bb128569-2c99-47a0-b5d6-72734aa90812",
+    "plan_id": "bd15d219-74d5-4143-838b-acf6090aea2f",
+    "extendable": false,
+    "increment_step": 0.00,
+    "increment_cost": 0.00
+  },
+  {
+    "id": "bc7e87bb-6c17-4773-8b35-93c4c9a10348",
+    "plan_id": "e09316b6-a290-40b6-b88b-e1d4c1bf8c99",
+    "extendable": true,
+    "increment_step": 10000.00,
+    "increment_cost": 10.00
+  },
+  {
+    "id": "cfad6b61-f90f-4a83-b8a0-8f3a626b6da8",
+    "plan_id": "4c6b0538-1901-4177-8cf0-fba9ee9caec2",
+    "extendable": true,
+    "increment_step": 10000.00,
+    "increment_cost": 10.00
+  },
+  {
+    "id": "d8155496-23b7-4a70-b8b6-69351d3bd456",
+    "plan_id": "93541dca-12b7-4c2d-8616-cfafbdc613ec",
+    "extendable": true,
+    "increment_step": 100000.00,
+    "increment_cost": 100.00
+  }
+]

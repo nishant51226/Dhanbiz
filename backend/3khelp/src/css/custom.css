@@ -1,0 +1,42 @@
+/**
+ * 3K Financial brand tokens — aligned with frontend `--color-brand-rgb` (gold).
+ */
+:root {
+  --ifm-color-primary: #c99700;
+  --ifm-color-primary-dark: #b38600;
+  --ifm-color-primary-darker: #a87e00;
+  --ifm-color-primary-darkest: #8a6800;
+  --ifm-color-primary-light: #d4a817;
+  --ifm-color-primary-lighter: #dab028;
+  --ifm-color-primary-lightest: #e8b800;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
+  --ifm-navbar-background-color: #0f2a33;
+  --ifm-navbar-link-color: #f5f5f4;
+  --ifm-navbar-link-hover-color: #e8b800;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #e8b800;
+  --ifm-color-primary-dark: #d4a817;
+  --ifm-color-primary-darker: #c99700;
+  --ifm-color-primary-darkest: #a87e00;
+  --ifm-color-primary-light: #f0c933;
+  --ifm-color-primary-lighter: #f3d14d;
+  --ifm-color-primary-lightest: #f7dc70;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-navbar-background-color: #0a1f26;
+}
+
+.navbar__logo img {
+  object-fit: contain;
+}
+
+.hero--primary {
+  --ifm-hero-background-color: #0f2a33;
+  --ifm-hero-text-color: #f5f5f4;
+}
+
+.footer--dark {
+  --ifm-footer-background-color: #0a1f26;
+}

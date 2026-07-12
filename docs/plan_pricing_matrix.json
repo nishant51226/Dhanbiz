@@ -1,0 +1,233 @@
+[
+  {
+    "id": "02c60f01-44cf-452a-b335-3bef100589ec",
+    "plan_id": "4c6b0538-1901-4177-8cf0-fba9ee9caec2",
+    "turnover_min": 50001.00,
+    "turnover_max": null,
+    "price": 99.00
+  },
+  {
+    "id": "03a99cfa-aa8b-451a-a8d1-2b0caa1adf4a",
+    "plan_id": "4c6b0538-1901-4177-8cf0-fba9ee9caec2",
+    "turnover_min": 0.00,
+    "turnover_max": 50000.00,
+    "price": 49.00
+  },
+  {
+    "id": "0e938937-5012-404a-a8c3-8ba969a24ea9",
+    "plan_id": "bd15d219-74d5-4143-838b-acf6090aea2f",
+    "turnover_min": 250001.00,
+    "turnover_max": 350000.00,
+    "price": 115.00
+  },
+  {
+    "id": "1a98f23c-0b80-4e17-a7c1-c5a7ae0be65a",
+    "plan_id": "3b7bcd3b-b6fe-438b-9cda-9dfbdf80b53b",
+    "turnover_min": 350001.00,
+    "turnover_max": 450000.00,
+    "price": 320.00
+  },
+  {
+    "id": "25224559-4546-4695-9af4-dbf30120e9b7",
+    "plan_id": "3b7bcd3b-b6fe-438b-9cda-9dfbdf80b53b",
+    "turnover_min": 0.00,
+    "turnover_max": 250000.00,
+    "price": 300.00
+  },
+  {
+    "id": "264e3f1b-3922-493b-8645-7ce53366e964",
+    "plan_id": "e09316b6-a290-40b6-b88b-e1d4c1bf8c99",
+    "turnover_min": 50.00,
+    "turnover_max": 100.00,
+    "price": 99.00
+  },
+  {
+    "id": "321bcdca-aebf-4e07-b2f1-f4ee1f9977ec",
+    "plan_id": "3b7bcd3b-b6fe-438b-9cda-9dfbdf80b53b",
+    "turnover_min": 250001.00,
+    "turnover_max": 350000.00,
+    "price": 310.00
+  },
+  {
+    "id": "382c620b-f4e6-46d6-9f2c-7a4fe5c877cb",
+    "plan_id": "e09316b6-a290-40b6-b88b-e1d4c1bf8c99",
+    "turnover_min": 100.00,
+    "turnover_max": 1000.00,
+    "price": 150.00
+  },
+  {
+    "id": "3c8f0ec3-025e-4989-a46d-38413344a264",
+    "plan_id": "6d87a7dd-5f1e-43b8-ab0e-cbd28cdafd9d",
+    "turnover_min": 0.00,
+    "turnover_max": 50000.00,
+    "price": 49.00
+  },
+  {
+    "id": "41010284-5865-463a-a468-76aedc482cf0",
+    "plan_id": "bd15d219-74d5-4143-838b-acf6090aea2f",
+    "turnover_min": 0.00,
+    "turnover_max": 250000.00,
+    "price": 100.00
+  },
+  {
+    "id": "422655b0-b0be-4359-8cff-4fb210fe6551",
+    "plan_id": "bd15d219-74d5-4143-838b-acf6090aea2f",
+    "turnover_min": 350001.00,
+    "turnover_max": 450000.00,
+    "price": 130.00
+  },
+  {
+    "id": "441395b9-3b87-4808-9b51-9149e255dc3b",
+    "plan_id": "3249b3b5-c7d6-4347-b4af-f09e325c9fbc",
+    "turnover_min": 250001.00,
+    "turnover_max": 350000.00,
+    "price": 265.00
+  },
+  {
+    "id": "4f0cbb52-ad73-489e-a117-c4bf3de61a27",
+    "plan_id": "93541dca-12b7-4c2d-8616-cfafbdc613ec",
+    "turnover_min": 450001.00,
+    "turnover_max": 550000.00,
+    "price": 600.00
+  },
+  {
+    "id": "5455a4e1-6657-4a64-9efc-1648625b0e6a",
+    "plan_id": "3b7bcd3b-b6fe-438b-9cda-9dfbdf80b53b",
+    "turnover_min": 450001.00,
+    "turnover_max": 550000.00,
+    "price": 330.00
+  },
+  {
+    "id": "55dbe573-0011-4539-9173-493fb3eebdc9",
+    "plan_id": "2d4b4e72-669a-43f0-9522-7789351fa8ed",
+    "turnover_min": 450001.00,
+    "turnover_max": 550000.00,
+    "price": 180.00
+  },
+  {
+    "id": "5a13d8ab-ba6b-4be7-b020-be7d46887c58",
+    "plan_id": "93541dca-12b7-4c2d-8616-cfafbdc613ec",
+    "turnover_min": 350001.00,
+    "turnover_max": 450000.00,
+    "price": 500.00
+  },
+  {
+    "id": "81986558-37c8-4ab7-bd7d-13acc465a820",
+    "plan_id": "2d4b4e72-669a-43f0-9522-7789351fa8ed",
+    "turnover_min": 250001.00,
+    "turnover_max": 350000.00,
+    "price": 160.00
+  },
+  {
+    "id": "8606a70a-4b30-4d8c-a3af-63cfa9f2f988",
+    "plan_id": "3249b3b5-c7d6-4347-b4af-f09e325c9fbc",
+    "turnover_min": 0.00,
+    "turnover_max": 250000.00,
+    "price": 250.00
+  },
+  {
+    "id": "966ec345-04d9-4588-afdd-4835ba3f0a79",
+    "plan_id": "2d4b4e72-669a-43f0-9522-7789351fa8ed",
+    "turnover_min": 550001.00,
+    "turnover_max": 650000.00,
+    "price": 190.00
+  },
+  {
+    "id": "988e770f-0b01-4aee-aad8-2863ccb74a9d",
+    "plan_id": "93541dca-12b7-4c2d-8616-cfafbdc613ec",
+    "turnover_min": 550001.00,
+    "turnover_max": 650000.00,
+    "price": 700.00
+  },
+  {
+    "id": "a19560bb-fd12-4f6a-bb90-baf1a1de7625",
+    "plan_id": "93541dca-12b7-4c2d-8616-cfafbdc613ec",
+    "turnover_min": 0.00,
+    "turnover_max": 250000.00,
+    "price": 300.00
+  },
+  {
+    "id": "a9920a42-43ee-468d-aef1-d9c207a47510",
+    "plan_id": "93541dca-12b7-4c2d-8616-cfafbdc613ec",
+    "turnover_min": 650001.00,
+    "turnover_max": 750000.00,
+    "price": 800.00
+  },
+  {
+    "id": "ab0f6c27-513d-456c-8e43-d22538dde855",
+    "plan_id": "6d87a7dd-5f1e-43b8-ab0e-cbd28cdafd9d",
+    "turnover_min": 50001.00,
+    "turnover_max": null,
+    "price": 99.00
+  },
+  {
+    "id": "b0732940-c309-42f4-beeb-ac1c1acc55e9",
+    "plan_id": "2d4b4e72-669a-43f0-9522-7789351fa8ed",
+    "turnover_min": 350001.00,
+    "turnover_max": 450000.00,
+    "price": 170.00
+  },
+  {
+    "id": "b4bf50d6-d184-418d-9ba3-37102901f4bc",
+    "plan_id": "e09316b6-a290-40b6-b88b-e1d4c1bf8c99",
+    "turnover_min": 0.00,
+    "turnover_max": 50.00,
+    "price": 49.00
+  },
+  {
+    "id": "bf0a6928-85c4-42a6-b403-df188622b129",
+    "plan_id": "bd15d219-74d5-4143-838b-acf6090aea2f",
+    "turnover_min": 450001.00,
+    "turnover_max": 550000.00,
+    "price": 150.00
+  },
+  {
+    "id": "c0f2c6cc-c2fb-4aca-80ac-90c7e9973d3d",
+    "plan_id": "3249b3b5-c7d6-4347-b4af-f09e325c9fbc",
+    "turnover_min": 350001.00,
+    "turnover_max": 450000.00,
+    "price": 280.00
+  },
+  {
+    "id": "c148b161-95e6-4861-aa8d-10a78441a1ea",
+    "plan_id": "3249b3b5-c7d6-4347-b4af-f09e325c9fbc",
+    "turnover_min": 450001.00,
+    "turnover_max": 550000.00,
+    "price": 300.00
+  },
+  {
+    "id": "c3afeb24-d22a-47a9-9b81-99825bcb4621",
+    "plan_id": "93541dca-12b7-4c2d-8616-cfafbdc613ec",
+    "turnover_min": 250001.00,
+    "turnover_max": 350000.00,
+    "price": 400.00
+  },
+  {
+    "id": "cb886855-e537-4d96-86aa-d8f41224ec0e",
+    "plan_id": "3b7bcd3b-b6fe-438b-9cda-9dfbdf80b53b",
+    "turnover_min": 650001.00,
+    "turnover_max": 750000.00,
+    "price": 350.00
+  },
+  {
+    "id": "e5c876f9-5f93-42ce-a5b6-a2090fda3c85",
+    "plan_id": "2d4b4e72-669a-43f0-9522-7789351fa8ed",
+    "turnover_min": 650001.00,
+    "turnover_max": 750000.00,
+    "price": 200.00
+  },
+  {
+    "id": "f54cb74b-01f0-4e67-bb08-411c447bd01f",
+    "plan_id": "2d4b4e72-669a-43f0-9522-7789351fa8ed",
+    "turnover_min": 0.00,
+    "turnover_max": 250000.00,
+    "price": 150.00
+  },
+  {
+    "id": "faf8c281-ed58-4fce-90ea-537a6dafb142",
+    "plan_id": "3b7bcd3b-b6fe-438b-9cda-9dfbdf80b53b",
+    "turnover_min": 550001.00,
+    "turnover_max": 650000.00,
+    "price": 340.00
+  }
+]

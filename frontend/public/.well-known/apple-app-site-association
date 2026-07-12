@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "ZV5285SPUW.com.acc3kltd.app.dev"
+        ],
+        "paths": [
+          "*"
+        ]
+      }
+    ]
+  }
+}
