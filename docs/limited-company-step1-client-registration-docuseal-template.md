@@ -101,7 +101,7 @@ Match the in-app preview section order:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  For Dhanbiz - Office Use Only                            │
+│  For Dhanbiz - Office Use Only                           │
 │    Photo ID checkboxes, Address proof, Online access     │
 │    Notes, Internal remarks, Approval status              │
 └─────────────────────────────────────────────────────────┘
