@@ -14,7 +14,6 @@ import * as path from "node:path";
 import PgBoss from "pg-boss";
 import { DataSource, EntityManager, Repository } from "typeorm";
 import { Customer } from "../entities/customer.entity";
-import { CustomerFormSubmissionEntity } from "../entities/customer-form-submission.entity";
 import { CustomerUserEntity } from "../entities/customer-user.entity";
 import { RoleEntity } from "../entities/role.entity";
 import { UserEntity } from "../entities/user.entity";
@@ -167,7 +166,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       url,
       entities: [
         Customer,
-        CustomerFormSubmissionEntity,
         CustomerUserEntity,
         UserEntity,
         RoleEntity,
