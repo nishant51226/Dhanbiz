@@ -50,8 +50,6 @@ import type {
 } from "./queue-dashboard.types.js";
 
 const QUEUE = "extraction";
-/** Background jobs keyed by customer (e.g. sync or denormalised data builds). */
-export const CUSTOMERS_DATA_QUEUE = "customers_data";
 export const LIBRARY_ZIP_EXPORT_QUEUE = "library_zip_export";
 export const CUSTOMER_DOCUMENTS_EXPORT_QUEUE = "customer_documents_export";
 /** Re-dispatch queued jobs when no worker is processing and pg-boss never picked them up. */
@@ -154,7 +152,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     await boss.start();
     try {
       await boss.createQueue(QUEUE);
-      await boss.createQueue(CUSTOMERS_DATA_QUEUE);
       await boss.createQueue(LIBRARY_ZIP_EXPORT_QUEUE);
       await boss.createQueue(CUSTOMER_DOCUMENTS_EXPORT_QUEUE);
     } catch {
@@ -466,19 +463,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     } else {
       this.log.log(`Enqueued extraction job ${jobId} (pgBossId=${pgBossJobId})`);
     }
-    return pgBossJobId;
-  }
-
-  async enqueueCustomersData(customerId: string): Promise<string | null> {
-    if (!this.boss) {
-      throw new Error("Queue not available");
-    }
-    const trimmed = customerId.trim();
-    if (!trimmed) {
-      throw new BadRequestException("customerId is required");
-    }
-    const pgBossJobId = await this.boss.send(CUSTOMERS_DATA_QUEUE, { customerId: trimmed }, { retryLimit: 0 });
-    this.log.log(`Enqueued customers_data for customer ${trimmed} (pgBossId=${pgBossJobId})`);
     return pgBossJobId;
   }
 
@@ -1330,12 +1314,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
   /** Live pg-boss monitor for admin UI — reads `pgboss.job` joined with `jobs` where applicable. */
   async getPgBossDashboard(): Promise<QueueDashboardResponse> {
-    const queueNames = [
-      QUEUE,
-      CUSTOMERS_DATA_QUEUE,
-      LIBRARY_ZIP_EXPORT_QUEUE,
-      CUSTOMER_DOCUMENTS_EXPORT_QUEUE,
-    ];
+    const queueNames = [QUEUE, LIBRARY_ZIP_EXPORT_QUEUE, CUSTOMER_DOCUMENTS_EXPORT_QUEUE];
 
     if (!this.boss) {
       return {
