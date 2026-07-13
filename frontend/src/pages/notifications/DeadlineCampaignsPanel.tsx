@@ -313,7 +313,13 @@ export function DeadlineCampaignsPanel({ embedded = false }: { embedded?: boolea
 
       {loading ? <p className="text-sm text-muted">Loading deadline subtypes…</p> : null}
 
-      {!loading ? (
+      {!loading && events.length === 0 ? (
+        <p className="rounded-lg border border-border bg-surface-muted/60 px-3 py-2 text-sm text-muted">
+          No deadline fields available.
+        </p>
+      ) : null}
+
+      {!loading && events.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-[minmax(11rem,13rem)_1fr]">
           <nav className="space-y-1" aria-label="Deadline subtypes">
             {events.map((event) => {

@@ -10,10 +10,10 @@ import { DeadlineCampaignAudienceEntity } from "../entities/deadline-campaign-au
 import { DeadlineCampaignSendEntity } from "../entities/deadline-campaign-send.entity";
 import type { UpsertDeadlineCampaignDto } from "./dto/upsert-deadline-campaign.dto";
 import {
+  campaignDateKey,
   DEADLINE_DATE_FIELDS,
   evaluateDeadlinePhase,
   getDeadlineDateField,
-  londonDateKey,
   normaliseDeadlineDateKey,
   readDeadlineDateFromOnboarding,
 } from "./deadline-campaign-date-fields";
@@ -233,7 +233,7 @@ export class DeadlineCampaignService {
 
   /** Called every minute from cron. */
   async runDueCampaigns(now: Date = new Date()): Promise<void> {
-    const todayKey = londonDateKey(now);
+    const todayKey = campaignDateKey(now);
     const currentHm = now
       .toLocaleTimeString("en-GB", {
         timeZone: "Europe/London",
@@ -437,7 +437,7 @@ export class DeadlineCampaignService {
   }
 
   private async evaluateAllCustomers(config: CampaignEvalConfig): Promise<DeadlineCampaignPreviewResult> {
-    const todayKey = londonDateKey();
+    const todayKey = campaignDateKey();
     const customers = await runWithAdminRls(this.dataSource, async (manager) => {
       return manager.getRepository(Customer).find({
         where: { accountStatus: CustomerAccountStatus.active },

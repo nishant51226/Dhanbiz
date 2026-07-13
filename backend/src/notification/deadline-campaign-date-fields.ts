@@ -1,5 +1,3 @@
-/** Catalog of onboarding date fields deadline campaigns can watch. */
-
 export type DeadlineDateFieldDef = {
   id: string;
   label: string;
@@ -9,53 +7,13 @@ export type DeadlineDateFieldDef = {
   rootKeys?: readonly string[];
 };
 
-export const DEADLINE_DATE_FIELDS: readonly DeadlineDateFieldDef[] = [
-  {
-    id: "companies_house.accounts.next_accounts_due_on",
-    label: "CH — Accounts due",
-    path: ["companies_house", "accounts", "next_accounts_due_on"],
-  },
-  {
-    id: "companies_house.confirmation_statement.next_made_up_to",
-    label: "CH — Confirmation statement due",
-    path: ["companies_house", "confirmation_statement", "next_made_up_to"],
-  },
-  {
-    id: "companies_house.confirmation_statement.next_due",
-    label: "CH — CS next due",
-    path: ["companies_house", "confirmation_statement", "next_due"],
-  },
-  {
-    id: "custom_accounts_due",
-    label: "Custom accounts due",
-    rootKeys: ["accounts_fd", "accountsFd", "acsFd"],
-  },
-  {
-    id: "custom_cs_due",
-    label: "Custom CS due",
-    rootKeys: ["cs", "confirmation_stmt", "confirmationStmt"],
-  },
-  {
-    id: "tax.vat_return_due_date",
-    label: "VAT return due",
-    path: ["tax", "vat_return_due_date"],
-  },
-  {
-    id: "companies_house.accounts.next_accounts_period_end_on",
-    label: "CH — Financial year end",
-    path: ["companies_house", "accounts", "next_accounts_period_end_on"],
-  },
-  {
-    id: "companies_house.psc_appointment_verification_statement_due_on",
-    label: "CH — PSC identity verification due",
-    path: ["companies_house", "psc_appointment_verification_statement_due_on"],
-  },
-  {
-    id: "companies_house.officer_appointment_verification_statement_due_on",
-    label: "CH — Officer identity verification due",
-    path: ["companies_house", "officer_appointment_verification_statement_due_on"],
-  },
-] as const;
+/**
+ * Catalog of onboarding date fields deadline campaigns can watch.
+ * Emptied during the India conversion (UK statutory fields removed).
+ * Workstream D repopulates this with GST due-date fields (GSTR-1/3B by
+ * registration filing frequency) once gst_registrations exists.
+ */
+export const DEADLINE_DATE_FIELDS: readonly DeadlineDateFieldDef[] = [] as const;
 
 const BY_ID = new Map(DEADLINE_DATE_FIELDS.map((f) => [f.id, f]));
 
@@ -110,10 +68,10 @@ export function normaliseDeadlineDateKey(raw: string | null | undefined): string
   return `${y}-${m}-${day}`;
 }
 
-export const DEADLINE_CAMPAIGN_TIMEZONE = "Europe/London";
+export const DEADLINE_CAMPAIGN_TIMEZONE = "Asia/Kolkata";
 
-/** Calendar date key `YYYY-MM-DD` in Europe/London. */
-export function londonDateKey(d: Date = new Date()): string {
+/** Calendar date key `YYYY-MM-DD` in the campaign timezone. */
+export function campaignDateKey(d: Date = new Date()): string {
   return d.toLocaleDateString("en-CA", { timeZone: DEADLINE_CAMPAIGN_TIMEZONE });
 }
 
