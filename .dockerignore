@@ -7,10 +7,10 @@
 backend/dist
 frontend/dist
 **/*.md
-# Docusaurus user guide (backend/3khelp) — must ship .md docs into the web image
-!backend/3khelp/docs/
-!backend/3khelp/docs/**
+# Docusaurus user guide (backend/help) — must ship .md docs into the web image
+!backend/help/docs/
+!backend/help/docs/**
 **/*.mdx
-!backend/3khelp/docs/**
-!backend/3khelp/src/pages/**
+!backend/help/docs/**
+!backend/help/src/pages/**
 .DS_Store

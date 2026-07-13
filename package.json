@@ -6,7 +6,7 @@
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report",
     "test:codegen": "playwright codegen http://localhost:5173",
-    "help:dev": "npm start --prefix backend/3khelp"
+    "help:dev": "npm start --prefix backend/help"
   },
   "dependencies": {
     "nodemailer": "^8.0.11"

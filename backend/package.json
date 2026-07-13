@@ -1,5 +1,5 @@
 {
-  "name": "docp-backend",
+  "name": "dhanbiz-backend",
   "private": true,
   "main": "dist/main.js",
   "scripts": {

@@ -3,7 +3,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: '3K Financial Help',
+  title: 'Dhanbiz Help',
   tagline: 'Administrator, staff, and customer portal user guide',
   favicon: 'img/brand-logo.png',
   future: {
@@ -11,8 +11,8 @@ const config = {
   },
   url: 'https://localhost',
   baseUrl: '/document/',
-  organizationName: '3k-financial',
-  projectName: '3khelp',
+  organizationName: 'dhanbiz',
+  projectName: 'dhanbiz-help',
   onBrokenLinks: 'warn',
   i18n: {
     defaultLocale: 'en',
@@ -42,9 +42,9 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: '3K Financial Help',
+        title: 'Dhanbiz Help',
         logo: {
-          alt: '3K Financial — Keeping Klient Knowledgeable',
+          alt: 'Dhanbiz',
           src: 'img/brand-logo.png',
           width: 36,
           height: 36,
@@ -83,7 +83,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} 3K Financial & Accounting Services.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Dhanbiz.`,
       },
       prism: {
         theme: prismThemes.github,

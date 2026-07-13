@@ -4,7 +4,7 @@ sidebar_position: 10
 
 # Roles & permissions
 
-Access in 3K Financial is controlled by **roles** and **permission keys**. Each user can hold one or more roles; effective access is the **union** of all permissions from those roles.
+Access in Dhanbiz is controlled by **roles** and **permission keys**. Each user can hold one or more roles; effective access is the **union** of all permissions from those roles.
 
 **Superadmin** is a separate flag (`is_admin = true`) that bypasses every permission check.
 

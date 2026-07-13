@@ -1,4 +1,4 @@
-﻿# 3K Financial Help (Docusaurus)
+﻿# Dhanbiz Help (Docusaurus)
 
 User guide for administrators, staff, and the customer portal.
 
@@ -38,7 +38,7 @@ Output goes to `build/`. In Docker production, nginx serves this at **`/document
 
 The navbar and favicon use `static/img/brand-logo.png` (copied from `frontend/public/brand-logo.png`). Re-copy that file if the app logo changes.
 
-Root `.dockerignore` excludes `**/*.md` globally but **must** un-ignore `backend/3khelp/docs/**` so Jenkins/Docker builds include Docusaurus content.
+Root `.dockerignore` excludes `**/*.md` globally but **must** un-ignore `backend/help/docs/**` so Jenkins/Docker builds include Docusaurus content.
 
 ## Deployment
 

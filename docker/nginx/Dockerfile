@@ -9,9 +9,9 @@ RUN npm run build
 
 FROM node:20-alpine AS help-builder
 WORKDIR /app
-COPY backend/3khelp/package.json backend/3khelp/package-lock.json* ./
+COPY backend/help/package.json backend/help/package-lock.json* ./
 RUN npm ci
-COPY backend/3khelp/ ./
+COPY backend/help/ ./
 RUN npm run build
 
 FROM nginx:alpine

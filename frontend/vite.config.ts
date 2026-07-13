@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       proxy: {
-        // Docusaurus user guide (backend/3khelp) at /document/ — run `npm start` in 3khelp (port 3456).
+        // Docusaurus user guide (backend/help) at /document/ — run `npm start` in help (port 3456).
         "/document": {
           target: helpProxyTarget,
           changeOrigin: true,

@@ -14,7 +14,7 @@ function HomepageHeader() {
       <div className="container">
         <img
           src={`${siteConfig.baseUrl}img/brand-logo.png`}
-          alt="3K Financial"
+          alt="Dhanbiz"
           className={styles.heroLogo}
           width={120}
           height={120}
@@ -40,7 +40,7 @@ export default function Home() {
   return (
     <Layout
       title={siteConfig.title}
-      description="User guide for 3K Financial administrators, staff, and customer portal users.">
+      description="User guide for Dhanbiz administrators, staff, and customer portal users.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

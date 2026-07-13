@@ -3,9 +3,9 @@ sidebar_position: 1
 slug: /
 ---
 
-# Welcome to 3K Financial
+# Welcome to Dhanbiz
 
-This help site documents how to use the **3K Financial & Accounting Services** platform — the web application for practice staff and customer portal users.
+This help site documents how to use the **Dhanbiz** platform — the web application for practice staff and customer portal users.
 
 ## Who this is for
 
