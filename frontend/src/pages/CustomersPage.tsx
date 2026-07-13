@@ -208,7 +208,7 @@ function CustomersPageContent() {
     const base: GridColDef<CustomerGridRow>[] = [
       {
         field: "threeKRef",
-        headerName: "3K Ref",
+        headerName: "Client Ref",
         width: 168,
         sortable: false,
         valueFormatter: (value) => (typeof value === "string" && value !== "—" ? value : "—"),

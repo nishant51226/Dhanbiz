@@ -657,11 +657,11 @@ ${tradingAddressSectionHtml}
   <div class="section-hdr">Declaration</div>
   <div class="decl-box">
     <p>
-      I understand and confirm that I have agreed to the terms and conditions of 3K Ltd and have provided all the above
+      I understand and confirm that I have agreed to the terms and conditions of Dhanbiz and have provided all the above
       information accurately and instructed to act for us.
     </p>
     <p>
-      At 3K Ltd, we value our client's privacy and we will not share your information with any 3rd party. The information
+      At Dhanbiz, we value our client's privacy and we will not share your information with any 3rd party. The information
       collected in this form will be used to setup a client profile and will help us to serve you better.
     </p>
 
@@ -682,7 +682,7 @@ ${tradingAddressSectionHtml}
 
 <div class="page page-office">
 
-  <div class="section-hdr">For 3K Ltd - Office Use Only</div>
+  <div class="section-hdr">For Dhanbiz - Office Use Only</div>
   <table class="form-tbl">
     <tbody>
       <tr>

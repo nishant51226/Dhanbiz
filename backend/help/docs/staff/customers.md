@@ -10,7 +10,7 @@ The Customers module (`/customers`) is the central hub for managing client accou
 
 ## Customers list
 
-A sortable, paginated table of all clients. Columns include 3K reference, client name, entity type, contact email, subscription plan, and status.
+A sortable, paginated table of all clients. Columns include Client reference, client name, entity type, contact email, subscription plan, and status.
 
 ![Customers list](/img/docs/customers-01-list.png)
 

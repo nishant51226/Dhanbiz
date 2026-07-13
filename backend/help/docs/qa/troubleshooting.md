@@ -22,7 +22,7 @@ Common issues and what to try before contacting support.
 | Cannot see **+ Add customer** | Missing `customer:write` | Administrator updates your role |
 | Onboarding form won't save | Required field missing | Check red validation messages |
 | DocuSeal email not received | SMTP or wrong contact email | Verify email in Details; check spam |
-| Customer not in list | Filter active or wrong tenant | Clear filters; search by 3K ref |
+| Customer not in list | Filter active or wrong tenant | Clear filters; search by Client ref |
 
 ## Jobs & extraction
 

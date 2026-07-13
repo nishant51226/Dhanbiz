@@ -11,7 +11,7 @@ export const CUSTOMER_SUMMARY_EXPORT_CATALOG: readonly {
   { id: "subscriptionPlan", label: "Subscription plan", defaultOn: true },
   { id: "planId", label: "Matrix plan ID", defaultOn: false },
   { id: "portalUsers", label: "Portal users", defaultOn: true },
-  { id: "threeKRef", label: "3K reference", defaultOn: true },
+  { id: "threeKRef", label: "Client reference", defaultOn: true },
   { id: "entityType", label: "Entity type", defaultOn: true },
   { id: "industryGroup", label: "Industry group", defaultOn: true },
   { id: "joiningMonth", label: "Joining month", defaultOn: true },

@@ -506,7 +506,7 @@ export default function CustomerDetailsPage() {
 
       <DetailSection title="Business profile">
         <ProfileDetailField
-          label="3K reference"
+          label="Client reference"
           displayValue={threeKRef}
           editPath="agent.client_reference"
           canEdit={canEditActiveDetails}

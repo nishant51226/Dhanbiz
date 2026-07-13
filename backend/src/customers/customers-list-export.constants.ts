@@ -34,7 +34,7 @@ export const CUSTOMERS_EXPORT_ALLOWED_COLUMN_KEYS = Array.from(
 export const CUSTOMER_LIST_EXPORT_LABELS: Record<CustomerListExportColumnKey, string> = {
   id: "Customer ID",
   name: "Client name",
-  threeKRef: "3K Ref",
+  threeKRef: "Client Ref",
   businessType: "Sole / Ltd / Partnership",
   city: "City",
   email: "Email",

@@ -498,7 +498,7 @@ export default function StaffSettingsBasicPage() {
           <dl className="min-w-0 flex-1 space-y-3 text-sm">
             <div>
               <dt className="text-[10px] font-bold uppercase tracking-wide text-muted">Practice name</dt>
-              <dd className="mt-0.5 font-medium text-ink">3K Financial &amp; Accounting Services Ltd</dd>
+              <dd className="mt-0.5 font-medium text-ink">Dhanbiz Accounting Services Pvt Ltd</dd>
             </div>
             <div>
               <dt className="text-[10px] font-bold uppercase tracking-wide text-muted">Environment</dt>

@@ -482,7 +482,7 @@ export const EMPTY_HMRC_OPTIONS: CustomerOnboardingData["hmrc_options"] = {
 
 /** Practice defaults for HMRC 64-8 agent block (step 2). */
 export const DEFAULT_PRACTICE_AGENT_STATIC = {
-  name: "3K Financial & Accounting Services Ltd",
+  name: "Dhanbiz Accounting Services Pvt Ltd",
   address: "128 City Road, London",
   postcode: "EC1V 2NX",
   phone: "03 300 300 303",
@@ -492,7 +492,7 @@ export const DEFAULT_PRACTICE_AGENT_STATIC = {
 export const DEFAULT_PRACTICE_CIS_REFERENCE = "HZ5896";
 
 /** Matches refs produced by `defaultAgentClientReference` (slug = lowercase alphanumerics only). */
-const AUTO_CLIENT_REF_PATTERN = /^3K-[a-z0-9]+-\d+$/i;
+const AUTO_CLIENT_REF_PATTERN = /^(?:3K|DHB)-[a-z0-9]+-\d+$/i;
 
 const CLIENT_REF_SEQ_LS_KEY = "docparser.clientReferenceSeq";
 
@@ -520,7 +520,7 @@ export function slugifyCompanyOrClientName(raw: string): string {
 }
 
 /**
- * Client reference: `3K-{companyOrClientNameSlug}-{incrementalNumber}`.
+ * Client reference: `DHB-{companyOrClientNameSlug}-{incrementalNumber}`.
  * Increment comes from `allocClientReferenceSequence()` on first auto-assign; if `currentReference`
  * already matches our auto pattern, the same numeric suffix is kept when only the name slug changes.
  */
@@ -530,9 +530,9 @@ export function defaultAgentClientReference(
 ): string {
   const slug = slugifyCompanyOrClientName(data.company?.name ?? "");
   const cur = String(currentReference ?? "").trim();
-  const m = /^3K-[a-z0-9]+-(\d+)$/i.exec(cur);
+  const m = /^(?:3K|DHB)-[a-z0-9]+-(\d+)$/i.exec(cur);
   const seq = m ? m[1] : String(allocClientReferenceSequence());
-  return `3K-${slug}-${seq}`;
+  return `DHB-${slug}-${seq}`;
 }
 
 export function isAutoFilledAgentClientReference(value: string): boolean {

@@ -207,8 +207,8 @@ export function renderChangeAccountantHtml(data: CustomerOnboardingData): string
   <div class="subject">Change of Accountants</div>
 
   <p class="body-para">
-    I am writing to you to inform you that I have decided to move accountants to 3K
-    Financial &amp; Accounting Services Ltd, ${esc(agentAddr)},
+    I am writing to you to inform you that I have decided to move accountants to Dhanbiz
+    Accounting Services Pvt Ltd, ${esc(agentAddr)},
     ${esc(agentPostcode)}.
   </p>
 

@@ -28,7 +28,7 @@ export class MailService {
     const secure = this.config.get<string>("MAIL_SECURE")?.trim() === "true";
 
     this.fromAddress = this.config.get<string>("MAIL_FROM")?.trim() || "no-reply@3klimited.com";
-    this.fromName = this.config.get<string>("MAIL_FROM_NAME")?.trim() || "3K Financial & Accounting Services Ltd";
+    this.fromName = this.config.get<string>("MAIL_FROM_NAME")?.trim() || "Dhanbiz Accounting Services Pvt Ltd";
 
     if (!host || !portRaw) {
       this.transporter = null;

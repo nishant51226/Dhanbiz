@@ -14,7 +14,7 @@ export const HMRC_LOGO_BUNDLED_URL = "/hmrc-logo.png";
 export const DIRECT_DEBIT_LOGO_URL = "/direct-debit-logo.svg";
 
 /** Navbar fallback when `/me` `customer_name` is empty (practice staff / superadmin). */
-export const PRACTICE_LEGAL_NAME = "3K Financial & Accounting Services Ltd";
+export const PRACTICE_LEGAL_NAME = "Dhanbiz Accounting Services Pvt Ltd";
 
 export function getApiBase(): string {
   return import.meta.env.VITE_API_BASE !== undefined && import.meta.env.VITE_API_BASE !== ""
