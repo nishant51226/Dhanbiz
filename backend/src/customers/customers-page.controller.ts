@@ -54,13 +54,6 @@ export class CustomersPageController {
     return { fields: ONBOARDING_DASHBOARD_SORT_FIELDS.map((f) => ({ id: f.id, label: f.label })) };
   }
 
-  /** Buckets for staff dashboard charts (status, CH type, creation / cessation years from `companies_house`). */
-  @Get("companies-house-dashboard-aggregates")
-  @ApiOperation({ summary: "Companies House snapshot aggregates for dashboard charts" })
-  async companiesHouseDashboardAggregates(@Req() req: AuthedRequest) {
-    return this.customersPage.getCompaniesHouseDashboardAggregates(req.user);
-  }
-
   @Get("page-with-submission-data")
   @ApiQuery({ name: "page", required: true, type: Number, description: "1-based page index." })
   @ApiQuery({

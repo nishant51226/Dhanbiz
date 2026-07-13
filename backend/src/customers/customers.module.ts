@@ -20,9 +20,7 @@ import { CustomerOnboardingS3Service } from "./customer-onboarding-s3.service";
 import { OnboardingHtmlPdfService } from "./onboarding-html-pdf.service";
 import { OnboardingPdfSignatureHydrateService } from "./onboarding-pdf-signature-hydrate.service";
 import { CustomerFormSubmissionsService } from "./customer-form-submissions.service";
-import { CompaniesHouseModule } from "../companies-house/companies-house.module";
 import { NotificationModule } from "../notification/notification.module";
-import { CompanyLookupController } from "./company-lookup.controller";
 import { CustomersPageController } from "./customers-page.controller";
 import { CustomersPageService } from "./customers-page.service";
 import { CustomerPortalUserController } from "./customer-portal-user.controller";
@@ -48,7 +46,6 @@ import { StaffCustomerAssignmentSyncService } from "./staff-customer-assignment-
     ]),
     AuthModule,
     DocusealModule,
-    CompaniesHouseModule,
     NotificationModule,
   ],
   controllers: [
@@ -56,7 +53,6 @@ import { StaffCustomerAssignmentSyncService } from "./staff-customer-assignment-
     CustomerFinancialsController,
     CustomersController,
     CustomerPortalUserController,
-    CompanyLookupController,
     CustomerFormSubmissionsController,
   ],
   providers: [
