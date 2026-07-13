@@ -1,7 +1,7 @@
 export const TOKEN_KEY = "docp_token";
 export const REFRESH_TOKEN_KEY = "docp_refresh";
 
-export const BRAND_LOGO_URL = "/brand-logo.png";
+export const BRAND_LOGO_URL = "/brand-logo.svg";
 
 /** HMRC wordmark (same asset as Bing image search media URL). */
 export const HMRC_LOGO_IMG_URL =

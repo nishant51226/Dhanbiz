@@ -1,5 +1,5 @@
 /** Same path as frontend `src/constants.ts` — logo URL is resolved with `assetOrigin` in registration HTML. */
-export const BRAND_LOGO_URL = "/brand-logo.png";
+export const BRAND_LOGO_URL = "/brand-logo.svg";
 
 /** HMRC wordmark (same asset as Bing image search media URL). */
 export const HMRC_LOGO_IMG_URL =

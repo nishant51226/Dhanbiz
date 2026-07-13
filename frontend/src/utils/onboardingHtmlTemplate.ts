@@ -469,7 +469,7 @@ export function renderRegistrationHtml(
       <img
         class="brand-logo-img"
         src="${logoSrc}"
-        alt="3K Financial &amp; Accounting Services Ltd"
+        alt="Dhanbiz"
         width="220"
         height="72"
       />
