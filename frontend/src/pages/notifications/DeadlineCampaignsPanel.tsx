@@ -300,7 +300,7 @@ export function DeadlineCampaignsPanel({ embedded = false }: { embedded?: boolea
       {!embedded ? (
         <p className="text-sm text-muted">
           Pick a <strong className="font-medium text-ink-soft">date subtype</strong>, choose groups
-          or members, then set when to notify. UK (London) times.
+          or members, then set when to notify. IST (Asia/Kolkata) times.
         </p>
       ) : (
         <div>

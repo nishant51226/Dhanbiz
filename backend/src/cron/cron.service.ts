@@ -3,6 +3,7 @@ import { Cron } from "@nestjs/schedule";
 import { DataSource } from "typeorm";
 
 import { Customer } from "../entities/customer.entity";
+import { DEADLINE_CAMPAIGN_TIMEZONE } from "../notification/deadline-campaign-date-fields";
 import { DeadlineCampaignService } from "../notification/deadline-campaign.service";
 import { QueueService } from "../queue/queue.service";
 import { runWithAdminRls } from "../tenant/run-with-tenant-rls";
@@ -17,8 +18,8 @@ export class CronService {
     private readonly deadlineCampaigns: DeadlineCampaignService,
   ) {}
 
-  /** Every minute — evaluate deadline notification campaigns (Europe/London send slots). */
-  @Cron("0 * * * * *", { timeZone: "Europe/London" })
+  /** Every minute — evaluate deadline notification campaigns (Asia/Kolkata send slots). */
+  @Cron("0 * * * * *", { timeZone: DEADLINE_CAMPAIGN_TIMEZONE })
   async runDeadlineCampaigns(): Promise<void> {
     try {
       await this.deadlineCampaigns.runDueCampaigns();

@@ -22,7 +22,7 @@ function hmFromMinutes(totalMinutes: number): string {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-/** Build London send slots from schedule settings. */
+/** Build IST (Asia/Kolkata) send slots from schedule settings. */
 export function buildSendSlots(params: {
   scheduleMode: DeadlineCampaignScheduleMode;
   sendStartTime: string;
@@ -55,10 +55,10 @@ export function describeSendSchedule(params: {
   if (params.scheduleMode === "once") return "Once when entering the reminder window";
   const slots = buildSendSlots(params);
   if (params.scheduleMode === "daily_once") {
-    return `Daily at ${slots[0] ?? normalizeHm(params.sendStartTime)} UK`;
+    return `Daily at ${slots[0] ?? normalizeHm(params.sendStartTime)} IST`;
   }
   if (slots.length === 0) return "Daily (multiple times)";
-  return `${slots.length}× daily at ${slots.join(", ")} UK (every ${params.sendIntervalHours}h from ${normalizeHm(params.sendStartTime)})`;
+  return `${slots.length}× daily at ${slots.join(", ")} IST (every ${params.sendIntervalHours}h from ${normalizeHm(params.sendStartTime)})`;
 }
 
 /** Infer count/interval from legacy `send_times` JSON. */

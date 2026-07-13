@@ -694,8 +694,8 @@ export class DeadlineCampaignService {
       e.scheduleMode === "once"
         ? "Once when entering window"
         : e.scheduleMode === "daily_once"
-          ? `Daily at ${schedule.sendStartTime} UK`
-          : `${schedule.sendCountPerDay}× daily every ${schedule.sendIntervalHours}h from ${schedule.sendStartTime} UK (${schedule.sendTimes.join(", ")})`;
+          ? `Daily at ${schedule.sendStartTime} IST`
+          : `${schedule.sendCountPerDay}× daily every ${schedule.sendIntervalHours}h from ${schedule.sendStartTime} IST (${schedule.sendTimes.join(", ")})`;
     return {
       id: e.id,
       name: e.name,
