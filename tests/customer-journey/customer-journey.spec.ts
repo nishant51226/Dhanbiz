@@ -29,7 +29,7 @@ function write(filename: string, content: string) {
   fs.writeFileSync(path.join(DOCS_DIR, filename), content, "utf8");
 }
 
-const ENV = process.env.UAT_BASE_URL ?? process.env.BASE_URL ?? "https://fs3kltd.infurotech.com";
+const ENV = process.env.UAT_BASE_URL ?? process.env.BASE_URL ?? "https://dhanbiz.example.com";
 const NOW = new Date().toLocaleString("en-GB", { timeZone: "Europe/London" });
 
 // ─────────────────────────────────────────────────────────────────────────────

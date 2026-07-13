@@ -1,6 +1,6 @@
 # 3K Financial — E2E Documentation
 
-**Environment:** https://fs3kltd.infurotech.com  
+**Environment:** https://dhanbiz.example.com  
 **Generated:** 23/06/2026, 11:01:33
 
 ---

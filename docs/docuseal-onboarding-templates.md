@@ -178,7 +178,7 @@ Shown when payroll is turned on in **Services**.
 
 ### Office use
 
-Internal fields on step 1 (amber **Office use** block in the app). Checkboxes match the **For 3K Ltd - Office Use Only** rows on the client registration PDF.
+Internal fields on step 1 (amber **Office use** block in the app). Checkboxes match the **For Dhanbiz - Office Use Only** rows on the client registration PDF.
 
 | Wizard / PDF label | **DocuSeal field name** | Value sent |
 |--------------------|-------------------------|------------|
