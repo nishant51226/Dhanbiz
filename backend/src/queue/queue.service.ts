@@ -37,7 +37,6 @@ import { ExtractionPersistenceService } from "../extraction/extraction-persisten
 import { appendJobDiagnostic, shouldLogDiagnosticToConsole } from "../extraction/job-diagnostics.js";
 import type { FinancialJobResult, JobDiagnosticEntry } from "../extraction/financial-types.js";
 import { sanitizeStringsForPgJsonb } from "../extraction/sanitize-for-pg-jsonb.js";
-import { CompaniesHouseService } from "../companies-house/companies-house.service";
 import { S3Service } from "../s3/s3.service";
 import { runWithAdminRls } from "../tenant/run-with-tenant-rls.js";
 import { FileActivityLogService } from "../file-activity/file-activity-log.service.js";
@@ -51,7 +50,6 @@ import type {
 } from "./queue-dashboard.types.js";
 
 const QUEUE = "extraction";
-const SYNC = "sync_company_info";
 /** Background jobs keyed by customer (e.g. sync or denormalised data builds). */
 export const CUSTOMERS_DATA_QUEUE = "customers_data";
 export const LIBRARY_ZIP_EXPORT_QUEUE = "library_zip_export";
@@ -138,7 +136,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     private readonly extract: ExtractPipelineService,
     private readonly extractionPersistence: ExtractionPersistenceService,
     private readonly s3: S3Service,
-    private readonly companiesHouse: CompaniesHouseService,
     private readonly fileActivity: FileActivityLogService,
   ) {}
 
@@ -157,7 +154,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     await boss.start();
     try {
       await boss.createQueue(QUEUE);
-      await boss.createQueue(SYNC);
       await boss.createQueue(CUSTOMERS_DATA_QUEUE);
       await boss.createQueue(LIBRARY_ZIP_EXPORT_QUEUE);
       await boss.createQueue(CUSTOMER_DOCUMENTS_EXPORT_QUEUE);
@@ -224,18 +220,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     this.log.log(
       `pg-boss work() subscribed for "${QUEUE}" ×${EXTRACTION_WORKER_COUNT} parallel workers (batchSize=1 each)`,
     );
-
-    await boss.work(CUSTOMERS_DATA_QUEUE, { batchSize: 1 }, async (jobs) => {
-      const j = jobs[0];
-      if (!j?.data) return;
-      const { customerId } = j.data as { customerId?: string };
-      if (!customerId) {
-        this.log.warn(`customers_data job missing customerId (pgBossId=${j.id})`);
-        return;
-      }
-      await this.runSyncCompanyInfo(customerId);
-    });
-    this.log.log(`Queue worker also listening on "${CUSTOMERS_DATA_QUEUE}"`);
 
     await boss.work(LIBRARY_ZIP_EXPORT_QUEUE, { batchSize: 1 }, async (jobs) => {
       const j = jobs[0];
@@ -1348,7 +1332,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   async getPgBossDashboard(): Promise<QueueDashboardResponse> {
     const queueNames = [
       QUEUE,
-      SYNC,
       CUSTOMERS_DATA_QUEUE,
       LIBRARY_ZIP_EXPORT_QUEUE,
       CUSTOMER_DOCUMENTS_EXPORT_QUEUE,
@@ -1488,182 +1471,4 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       };
     });
   }
-
-  private async runSyncCompanyInfo(customerId: string): Promise<void> {
-    if (!this.workerDataSource) {
-      throw new Error("Worker DataSource not initialized");
-    }
-
-    const resolved = await runWithAdminRls(this.workerDataSource, async (m) => {
-      const customerRepo = m.getRepository(Customer);
-      const row = await customerRepo.findOne({
-        where: { id: customerId },
-        select: { id: true, onboardingData: true },
-      });
-      if (!row) {
-        this.log.warn(`customers_data: customer ${customerId} not found`);
-        return null;
-      }
-      const onboarding = row.onboardingData as Record<string, unknown> | null | undefined;
-      let num = companyNumberFromOnboardingData(onboarding);
-      if (!num) {
-        const subRepo = m.getRepository(CustomerFormSubmissionEntity);
-        const sub = await subRepo.findOne({
-          where: { customerId },
-          order: { updatedAt: "DESC" },
-          select: { data: true },
-        });
-        num = companyNumberFromOnboardingData(sub?.data as Record<string, unknown> | null | undefined);
-      }
-      if (!num) return null;
-      const previousCompaniesHouse = companiesHouseSnapshotFromOnboarding(onboarding);
-      return { companyNumber: num, previousCompaniesHouse };
-    });
-
-    if (!resolved) {
-      this.log.warn(
-        `customers_data: no company.number for ${customerId} (onboarding_data or latest form submission)`,
-      );
-      return;
-    }
-
-    const { companyNumber, previousCompaniesHouse } = resolved;
-    const numNorm = companyNumber.replace(/\s/g, "").toUpperCase();
-    this.log.log(`customers_data: requesting Companies House GET /company/${numNorm}`);
-    const chBundle = await this.companiesHouse.getCompanyCompleteBundle(companyNumber);
-    const chPatch = { company: chBundle.company, companies_house: chBundle.companies_house };
-    const nextCompaniesHouse = chPatch.companies_house as Record<string, unknown>;
-    const keyDiff = diffCompaniesHouseSnapshotKeys(
-      companiesHouseForDiffCompare(previousCompaniesHouse),
-      companiesHouseForDiffCompare(nextCompaniesHouse) ?? {},
-    );
-    this.log.log(
-      `customers_data: companies_house key diff for ${customerId} (${numNorm}): ${JSON.stringify(keyDiff)}`,
-    );
-
-    const hasMeaningfulDiff =
-      keyDiff.added.length > 0 || keyDiff.removed.length > 0 || keyDiff.changed.length > 0;
-    const isFirstCompaniesHouseSnapshot = previousCompaniesHouse === null;
-    if (!isFirstCompaniesHouseSnapshot && !hasMeaningfulDiff) {
-      this.log.log(
-        `customers_data: no companies_house changes for ${customerId} (${numNorm}), skipping onboarding_data update`,
-      );
-      return;
-    }
-
-    await runWithAdminRls(this.workerDataSource, async (m) => {
-      const repo = m.getRepository(Customer);
-      const row = await repo.findOne({
-        where: { id: customerId },
-        select: { id: true, onboardingData: true },
-      });
-      if (!row) {
-        this.log.warn(`customers_data: customer ${customerId} gone before save`);
-        return;
-      }
-      const current =
-        row.onboardingData && typeof row.onboardingData === "object" && !Array.isArray(row.onboardingData)
-          ? { ...(row.onboardingData as Record<string, unknown>) }
-          : {};
-      delete current.companies_house_key_diff_last;
-      const companyObj =
-        current.company && typeof current.company === "object" && !Array.isArray(current.company)
-          ? { ...(current.company as Record<string, unknown>) }
-          : {};
-      const mergedCompany = { ...companyObj, ...(chPatch.company as Record<string, unknown>) };
-      const companiesHouseOut: Record<string, unknown> = {
-        ...(chPatch.companies_house as Record<string, unknown>),
-        [COMPANIES_HOUSE_APP_OVERLAY_KEY]: {
-          key_diff_last: {
-            compared_at: new Date().toISOString(),
-            ...keyDiff,
-          },
-        },
-      };
-      const next: Record<string, unknown> = {
-        ...current,
-        company: mergedCompany,
-        companies_house: companiesHouseOut,
-      };
-      await repo.update(customerId, { onboardingData: next } as Parameters<Repository<Customer>["update"]>[1]);
-    });
-
-    this.log.log(`customers_data: Companies House synced for ${customerId} (${numNorm})`);
-  }
-}
-
-function companyNumberFromOnboardingData(data: Record<string, unknown> | null | undefined): string | null {
-  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
-  const company = data.company;
-  if (!company || typeof company !== "object" || Array.isArray(company)) return null;
-  const num = (company as Record<string, unknown>).number;
-  if (typeof num !== "string") return null;
-  const t = num.replace(/\s/g, "").trim();
-  return t.length ? t : null;
-}
-
-/** App-only overlay on `companies_house` (not from Companies House API). */
-const COMPANIES_HOUSE_APP_OVERLAY_KEY = "_sync";
-
-function companiesHouseSnapshotFromOnboarding(
-  onboarding: Record<string, unknown> | null | undefined,
-): Record<string, unknown> | null {
-  if (!onboarding || typeof onboarding !== "object" || Array.isArray(onboarding)) return null;
-  const ch = onboarding.companies_house;
-  if (!ch || typeof ch !== "object" || Array.isArray(ch)) return null;
-  const snap = { ...(ch as Record<string, unknown>) };
-  delete snap[COMPANIES_HOUSE_APP_OVERLAY_KEY];
-  return Object.keys(snap).length > 0 ? snap : null;
-}
-
-/** Keys we set locally each fetch; omit from `changed` so logs highlight CH-driven updates. */
-const COMPANIES_HOUSE_DIFF_IGNORE_CHANGED = new Set(["fetched_at"]);
-
-/** Full API payload; excluded from top-level key diff (large / duplicates normalized fields). */
-const CH_COMPANY_PROFILE_KEY = "ch_company_profile";
-
-function companiesHouseForDiffCompare(row: Record<string, unknown> | null): Record<string, unknown> | null {
-  if (!row) return null;
-  const o = { ...row };
-  delete o[COMPANIES_HOUSE_APP_OVERLAY_KEY];
-  delete o[CH_COMPANY_PROFILE_KEY];
-  return o;
-}
-
-/** Top-level key set diff; values compared with stable JSON so nested objects order does not matter. */
-function diffCompaniesHouseSnapshotKeys(
-  previous: Record<string, unknown> | null,
-  next: Record<string, unknown>,
-): { added: string[]; removed: string[]; changed: string[] } {
-  const prevKeys = previous ? new Set(Object.keys(previous)) : new Set<string>();
-  const nextKeys = new Set(Object.keys(next));
-  const added: string[] = [];
-  const removed: string[] = [];
-  const changed: string[] = [];
-  for (const k of nextKeys) {
-    if (!prevKeys.has(k)) {
-      added.push(k);
-      continue;
-    }
-    if (
-      previous &&
-      !COMPANIES_HOUSE_DIFF_IGNORE_CHANGED.has(k) &&
-      stableJsonStringify(previous[k]) !== stableJsonStringify(next[k])
-    ) {
-      changed.push(k);
-    }
-  }
-  for (const k of prevKeys) {
-    if (!nextKeys.has(k)) removed.push(k);
-  }
-  return { added, removed, changed };
-}
-
-function stableJsonStringify(value: unknown): string {
-  if (value === undefined) return "undefined";
-  if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map((x) => stableJsonStringify(x)).join(",")}]`;
-  const o = value as Record<string, unknown>;
-  const keys = Object.keys(o).sort();
-  return `{${keys.map((k) => `${JSON.stringify(k)}:${stableJsonStringify(o[k])}`).join(",")}}`;
 }
