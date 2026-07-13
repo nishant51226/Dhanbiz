@@ -11,6 +11,7 @@ import { DeadlineCampaignSendEntity } from "../entities/deadline-campaign-send.e
 import type { UpsertDeadlineCampaignDto } from "./dto/upsert-deadline-campaign.dto";
 import {
   campaignDateKey,
+  DEADLINE_CAMPAIGN_TIMEZONE,
   DEADLINE_DATE_FIELDS,
   evaluateDeadlinePhase,
   getDeadlineDateField,
@@ -236,7 +237,7 @@ export class DeadlineCampaignService {
     const todayKey = campaignDateKey(now);
     const currentHm = now
       .toLocaleTimeString("en-GB", {
-        timeZone: "Europe/London",
+        timeZone: DEADLINE_CAMPAIGN_TIMEZONE,
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
