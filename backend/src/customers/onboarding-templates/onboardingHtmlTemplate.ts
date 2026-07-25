@@ -1,6 +1,6 @@
 import { BRAND_LOGO_URL } from "./pdf-constants";
 import { getBrandLogoDataUrl } from "./brand-logo-src.js";
-import { type CustomerOnboardingData, showCompaniesHouseAuthCode } from "./customerOnboarding";
+import type { CustomerOnboardingData } from "./customerOnboarding";
 import { signatureForPdfHtml } from "./onboarding-template-signature-html.js";
 import { htmlFieldDate } from "./onboarding-template-field-html.js";
 import { buildClientRegistrationFormModel } from "./onboardingExportFormModel";
@@ -172,13 +172,6 @@ export function renderRegistrationHtml(
     : sigTrim && !sigTrim.startsWith("file:")
       ? `<p style="margin-top:8px;font-size:10px"><span class="sig-label">Signature</span> (text): ${esc(sigTrim)}</p>`
       : `<div class="sig-placeholder"><span class="sig-label">Signature</span></div>`;
-
-  const authCodeRowHtml = showCompaniesHouseAuthCode(data.company.type)
-    ? `<tr>
-        <td class="lbl">Auth code :</td>
-        <td class="val" colspan="3">${v(m.authCode)}</td>
-      </tr>`
-    : "";
 
   const subscriptionDormantRowHtml =
     m.subscriptionBillingCycle.trim().toLowerCase() === "yearly"
@@ -476,6 +469,16 @@ export function renderRegistrationHtml(
         <td class="lbl">Year End :</td>
         <td class="val">${v(m.yearEnd)}</td>
       </tr>
+      <tr>
+        <td class="lbl">GSTIN :</td>
+        <td class="val">${v(m.gstin)}</td>
+        <td class="lbl">PAN :</td>
+        <td class="val">${v(m.pan)}</td>
+      </tr>
+      <tr>
+        <td class="lbl">Constitution :</td>
+        <td class="val" colspan="3">${v(m.constitution)}</td>
+      </tr>
     </tbody>
   </table>
 
@@ -552,7 +555,6 @@ ${tradingAddressSectionHtml}
         <td class="lbl">CIS Reference :</td>
         <td class="val">${v(m.cisReference)}</td>
       </tr>
-      ${authCodeRowHtml}
     </tbody>
   </table>
 
@@ -603,7 +605,7 @@ ${tradingAddressSectionHtml}
         <td class="lbl">Online Access :</td>
         <td class="val" colspan="3">
           Company House&nbsp;${cb(data.office_use.online_access.companies_house)}&nbsp;&nbsp;
-          HMRC&nbsp;${cb(data.office_use.online_access.hmrc)}&nbsp;&nbsp;
+          GST&nbsp;${cb(data.office_use.online_access.gst)}&nbsp;&nbsp;
           PAYE&nbsp;${cb(data.office_use.online_access.paye)}&nbsp;&nbsp;
           VAT&nbsp;${cb(data.office_use.online_access.vat)}&nbsp;&nbsp;
           Bank&nbsp;${cb(data.office_use.online_access.bank)}&nbsp;&nbsp;

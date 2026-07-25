@@ -1,7 +1,6 @@
 import {
   BUSINESS_TYPE_OPTIONS,
   coerceOfficeNoted,
-  ensureHmrcRefsFromStep1,
   type CustomerOnboardingData,
   reviveCustomerOnboarding,
 } from "../customers/onboarding-templates/customerOnboarding";
@@ -39,21 +38,7 @@ export const DOCUSEAL_BOXED_FIELD_LENGTHS: Readonly<Record<string, number>> = {
   "company.number": 8,
   "tax.vat_number": 9,
   "tax.paye_ref": 12,
-  "hmrc_options.joint_claimant_ni_number": 9,
-  "hmrc_options.ref_self_assessment_ni_number": 9,
-  "hmrc_options.ref_self_assessment_utr": 10,
-  "hmrc_options.ref_trust_utr": 10,
-  "hmrc_options.ref_individual_paye_ni_number": 9,
-  "hmrc_options.ref_corporation_tax_utr": 10,
-  "hmrc_options.ref_tax_credits_ni_number": 9,
-  "hmrc_options.ref_cis_paye_ref": 12,
-  "hmrc_options.ref_employers_paye_ref": 12,
-  "bank.account_number": 8,
-  "bank.sort_code": 6,
 };
-
-/** Fixed on the Direct Debit PDF; not stored in onboarding JSON. */
-export const DIRECT_DEBIT_SERVICE_USER_NUMBER = "275069";
 
 function charsForBoxedField(value: string): string[] {
   return value.replace(/\s/g, "").split("");
@@ -87,16 +72,6 @@ export function expandBoxedFields(flat: DocusealPrefillValues): DocusealPrefillV
   }
 
   return out;
-}
-
-/** DocuSeal-only keys for the fixed Service User Number on the Direct Debit instruction. */
-export function expandDirectDebitServiceUserNumber(out: DocusealPrefillValues): DocusealPrefillValues {
-  const next = { ...out };
-  const chars = DIRECT_DEBIT_SERVICE_USER_NUMBER.split("");
-  for (let i = 0; i < chars.length; i++) {
-    next[`direct_debit.service_user_number.${i}`] = chars[i]!;
-  }
-  return next;
 }
 
 export function flattenCustomerOnboardingForDocuseal(data: CustomerOnboardingData): DocusealPrefillValues {
@@ -188,14 +163,12 @@ export function flattenCustomerOnboardingForDocuseal(data: CustomerOnboardingDat
  */
 export function docusealPrefillForSignatureTarget(
   data: CustomerOnboardingData,
+  /** Unused now that only client_registration/change_accountant are supported; kept for call-site parity. */
   target: OnboardingSignatureSlot,
 ): DocusealPrefillValues {
-  const enriched = ensureHmrcRefsFromStep1(withDocusealTaxNiFallback(data));
-  let out = expandBoxedFields(flattenCustomerOnboardingForDocuseal(enriched));
-  if (target === "direct_debit") {
-    out = expandDirectDebitServiceUserNumber(out);
-  }
-  return out;
+  void target;
+  const enriched = withDocusealTaxNiFallback(data);
+  return expandBoxedFields(flattenCustomerOnboardingForDocuseal(enriched));
 }
 
 /** Revive raw submission `data` JSON and build expanded DocuSeal field values. */

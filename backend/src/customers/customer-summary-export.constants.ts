@@ -55,7 +55,7 @@ export const CUSTOMER_SUMMARY_EXPORT_CATALOG: readonly {
   { id: "agentPhone", label: "Agent phone", defaultOn: false },
   { id: "agentCodeSa", label: "Agent code (SA)", defaultOn: false },
   { id: "agentCodeCt", label: "Agent code (CT)", defaultOn: false },
-  { id: "agentClientReference", label: "Agent / HMRC reference", defaultOn: true },
+  { id: "agentClientReference", label: "Agent / client reference", defaultOn: true },
   { id: "bankAccountHolder", label: "Bank account holder", defaultOn: false },
   { id: "bankSortCode", label: "Bank sort code", defaultOn: false },
   { id: "bankAccountNumber", label: "Bank account number", defaultOn: false },

@@ -17,10 +17,14 @@ export enum CustomerFormSubmissionStatus {
   completed = "completed",
 }
 
-/** Wizard / DocuSeal step (maps to `form_1` ? `form_4`). */
+/**
+ * Wizard / DocuSeal step (maps to `form_1` ? `form_4`). `form_2` (the retired UK agent-authorisation
+ * form) has no corresponding slot; only `form_1`/`form_3` are actively signable. `direct_debit`
+ * (`form_4`) is also retired from the signing flow but the slot name is kept so legacy stored
+ * signatures still round-trip correctly.
+ */
 export type OnboardingSignatureSlot =
   | "client_registration"
-  | "hmrc_64_8"
   | "change_accountant"
   | "direct_debit";
 
@@ -38,8 +42,6 @@ export function formKeyForSignatureSlot(slot: OnboardingSignatureSlot): Customer
   switch (slot) {
     case "client_registration":
       return "form_1";
-    case "hmrc_64_8":
-      return "form_2";
     case "change_accountant":
       return "form_3";
     case "direct_debit":
@@ -53,8 +55,6 @@ export function signatureSlotFromFormKey(key: CustomerFormSubmissionFormKey): On
   switch (key) {
     case "form_1":
       return "client_registration";
-    case "form_2":
-      return "hmrc_64_8";
     case "form_3":
       return "change_accountant";
     case "form_4":
@@ -160,7 +160,7 @@ export function normalizeCustomerFormSubmissionMetadata(
     const L = legacy as Record<string, unknown>;
     const tr = L.target;
     const slot: OnboardingSignatureSlot =
-      tr === "hmrc_64_8" || tr === "change_accountant" || tr === "direct_debit" || tr === "client_registration"
+      tr === "change_accountant" || tr === "direct_debit" || tr === "client_registration"
         ? tr
         : "client_registration";
     const fk = formKeyForSignatureSlot(slot);

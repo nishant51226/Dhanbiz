@@ -3,10 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import type { Browser } from "playwright";
 import { chromium } from "playwright";
 import type { CustomerOnboardingData } from "./onboarding-templates/customerOnboarding";
-import { getDirectDebitLogoDataUrl, getHmrcLogoDataUrl } from "./onboarding-templates/onboarding-template-image-src";
 import { renderChangeAccountantHtml } from "./onboarding-templates/changeAccountantHtmlTemplate";
-import { renderDirectDebitHtml } from "./onboarding-templates/directDebitHtmlTemplate";
-import { renderHmrc648Html } from "./onboarding-templates/hmrc648HtmlTemplate";
 import { renderRegistrationHtml } from "./onboarding-templates/onboardingHtmlTemplate";
 import type { OnboardingFormPdfKey } from "./onboarding-form-keys";
 
@@ -56,15 +53,8 @@ export class OnboardingHtmlPdfService implements OnModuleDestroy {
     switch (formKey) {
       case "form_1":
         return renderRegistrationHtml(data, { assetOrigin: origin });
-      case "form_2":
-        return renderHmrc648Html(data, { hmrcLogoSrc: getHmrcLogoDataUrl(), assetOrigin: origin });
       case "form_3":
         return renderChangeAccountantHtml(data);
-      case "form_4":
-        return renderDirectDebitHtml(data, {
-          directDebitLogoSrc: getDirectDebitLogoDataUrl(),
-          assetOrigin: origin,
-        });
       default:
         return renderRegistrationHtml(data, { assetOrigin: origin });
     }

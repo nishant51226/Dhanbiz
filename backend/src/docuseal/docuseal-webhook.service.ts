@@ -29,7 +29,7 @@ type WebhookEnvelope = {
   data?: Record<string, unknown>;
 };
 
-type DocusealMergeTarget = "client_registration" | "hmrc_64_8" | "change_accountant" | "direct_debit";
+type DocusealMergeTarget = "client_registration" | "change_accountant";
 
 function isHttpUrl(s: string): boolean {
   return /^https?:\/\//i.test(s.trim());
@@ -540,13 +540,9 @@ export class DocusealWebhookService {
 
     const target = mergeTarget;
     const remoteBasename =
-      target === "hmrc_64_8"
-        ? "hmrc-64-8-signature-remote.png"
-        : target === "change_accountant"
-          ? "change-accountant-signature-remote.png"
-          : target === "direct_debit"
-            ? "direct-debit-signature-remote.png"
-            : "client-registration-signature-remote.png";
+      target === "change_accountant"
+        ? "change-accountant-signature-remote.png"
+        : "client-registration-signature-remote.png";
     const fileId = await this.storeRemoteSignaturePng(row.customerId, imageUrl, remoteBasename);
     const d0 = payload.data;
     const completedAt =
@@ -605,10 +601,12 @@ export class DocusealWebhookService {
   ): DocusealMergeTarget {
     const n = normalizeCustomerFormSubmissionMetadata(metadata);
     const t = n[formKey]?.docuseal?.target;
-    if (t === "hmrc_64_8" || t === "change_accountant" || t === "direct_debit" || t === "client_registration") {
+    if (t === "change_accountant" || t === "client_registration") {
       return t;
     }
-    return signatureSlotFromFormKey(formKey) as DocusealMergeTarget;
+    /** Legacy retired-form-2/direct_debit slots (pre-India-rebrand) are no longer signable; treat as registration. */
+    const slot = signatureSlotFromFormKey(formKey);
+    return slot === "change_accountant" ? "change_accountant" : "client_registration";
   }
 
   private mergeSignatureIntoOnboarding(
@@ -653,28 +651,7 @@ export class DocusealWebhookService {
         client_registration: nextCr,
         by_form_index: byFormIndex,
       };
-    } else if (target === "hmrc_64_8") {
-      const h = (signatures.hmrc_64_8 as Record<string, unknown> | undefined) ?? {};
-      const dateVal =
-        typeof h.date === "string" && h.date.trim().length > 0 ? (h.date as string) : dateOnly;
-      const nextH = {
-        ...h,
-        signature: `file:${fileId}`,
-        date: dateVal,
-        collection_mode: "remote_email",
-      };
-      byFormIndex["2"] = {
-        form_key: "hmrc_64_8",
-        name: typeof h.name === "string" ? h.name : "",
-        date: dateVal,
-        signature: `file:${fileId}`,
-      };
-      base.signatures = {
-        ...signatures,
-        hmrc_64_8: nextH,
-        by_form_index: byFormIndex,
-      };
-    } else if (target === "change_accountant") {
+    } else {
       const c = (signatures.change_accountant as Record<string, unknown> | undefined) ?? {};
       const dateVal =
         typeof c.date === "string" && c.date.trim().length > 0 ? (c.date as string) : dateOnly;
@@ -693,27 +670,6 @@ export class DocusealWebhookService {
       base.signatures = {
         ...signatures,
         change_accountant: nextC,
-        by_form_index: byFormIndex,
-      };
-    } else {
-      const dd = (signatures.direct_debit as Record<string, unknown> | undefined) ?? {};
-      const dateVal =
-        typeof dd.date === "string" && dd.date.trim().length > 0 ? (dd.date as string) : dateOnly;
-      const nextDd = {
-        ...dd,
-        signature: `file:${fileId}`,
-        date: dateVal,
-        collection_mode: "remote_email",
-      };
-      byFormIndex["4"] = {
-        form_key: "direct_debit",
-        name: typeof dd.name === "string" ? dd.name : "",
-        date: dateVal,
-        signature: `file:${fileId}`,
-      };
-      base.signatures = {
-        ...signatures,
-        direct_debit: nextDd,
         by_form_index: byFormIndex,
       };
     }

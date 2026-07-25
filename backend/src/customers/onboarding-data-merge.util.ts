@@ -18,8 +18,17 @@
  * `incoming` as `null`/`undefined` for "no patch" (returns existing as-is).
  */
 
-const SIGNATURE_SLOTS = ["client_registration", "hmrc_64_8", "change_accountant", "direct_debit"] as const;
-type SignatureSlot = (typeof SIGNATURE_SLOTS)[number];
+/**
+ * Slot name plus its fixed `by_form_index` key (1-based wizard step). Registration is step 1,
+ * change-of-accountant is step 3; step 2 (the retired UK agent-authorisation form) is intentionally absent
+ * here — old step-2 signature data, if any exists on legacy rows, is no longer preserved.
+ */
+const SIGNATURE_SLOTS = [
+  { slot: "client_registration", indexKey: "1" },
+  { slot: "change_accountant", indexKey: "3" },
+  { slot: "direct_debit", indexKey: "4" },
+] as const;
+type SignatureSlot = (typeof SIGNATURE_SLOTS)[number]["slot"];
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {
   return v !== null && typeof v === "object" && !Array.isArray(v);
@@ -69,8 +78,7 @@ export function preserveOnboardingSignatures(
    */
   const mergedSignatures: Record<string, unknown> = { ...incomingSignatures };
   let preservedAny = false;
-  for (let i = 0; i < SIGNATURE_SLOTS.length; i++) {
-    const slot = SIGNATURE_SLOTS[i];
+  for (const { slot, indexKey } of SIGNATURE_SLOTS) {
     const existingSig = readSlotSignature(existingSignatures, slot);
     if (isEmptySignatureValue(existingSig)) continue;
     const incomingSig = readSlotSignature(incomingSignatures, slot);
@@ -85,7 +93,6 @@ export function preserveOnboardingSignatures(
      * the webhook service). When we restore a slot's signature we restore the matching index
      * row so downstream code that reads from the index gets the same value.
      */
-    const indexKey = String(i + 1);
     const existingByIndex = isPlainObject((existingSignatures as Record<string, unknown>).by_form_index)
       ? ((existingSignatures as Record<string, unknown>).by_form_index as Record<string, unknown>)
       : null;

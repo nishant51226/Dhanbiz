@@ -1,6 +1,6 @@
 /**
  * Customer onboarding � single JSON document (DB SSOT). Keys are snake_case to match stored JSON.
- * Multiple form controls bind to the same paths (e.g. company.name, tax.utr, tax.auth_code) so values stay in sync.
+ * Multiple form controls bind to the same paths (e.g. company.name, tax.utr, company.gstin) so values stay in sync.
  */
 
 import crypto from "node:crypto";
@@ -19,62 +19,6 @@ export type DirectorEntry = {
   identity_verification_code: string;
 };
 
-/** Subset of Companies House GET /company/{number} stored on the onboarding record (SSOT). */
-export type CompaniesHouseProfileSnapshot = {
-  fetched_at?: string;
-  etag?: string;
-  company_status?: string;
-  company_status_detail?: string;
-  date_of_creation?: string;
-  date_of_cessation?: string;
-  jurisdiction?: string;
-  type?: string;
-  sic_codes?: string[];
-  can_file?: boolean;
-  registered_office_is_in_dispute?: boolean;
-  undeliverable_registered_office_address?: boolean;
-  partial_data_available?: string;
-  has_insolvency_history?: boolean;
-  accounts?: {
-    accounting_reference_day?: number;
-    accounting_reference_month?: number;
-    last_accounts_period_end_on?: string;
-    last_accounts_period_start_on?: string;
-    last_accounts_type?: string;
-    next_accounts_due_on?: string;
-    next_accounts_overdue?: boolean;
-    next_accounts_period_end_on?: string;
-    next_accounts_period_start_on?: string;
-  };
-  confirmation_statement?: {
-    last_made_up_to?: string;
-    next_due?: string;
-    next_made_up_to?: string;
-    overdue?: boolean;
-  };
-  annual_return?: {
-    last_made_up_to?: string;
-    next_due?: string;
-    next_made_up_to?: string;
-    overdue?: boolean;
-  };
-  branch_company_details?: {
-    business_activity?: string;
-    parent_company_name?: string;
-    parent_company_number?: string;
-  };
-  foreign_company_details?: {
-    business_activity?: string;
-    registration_number?: string;
-    originating_country?: string;
-    originating_registry_name?: string;
-    company_type?: string;
-    governed_by?: string;
-  };
-  previous_company_names?: { name?: string; effective_from?: string; ceased_on?: string }[];
-  links?: Record<string, string>;
-};
-
 export type CustomerOnboardingData = {
   company: {
     name: string;
@@ -84,10 +28,18 @@ export type CustomerOnboardingData = {
     year_end: string;
     /** Employer PAYE number (company-level; all business types). */
     paye_number: string;
-    /** From Companies House profile when applied */
-    company_status?: string;
-    date_of_creation?: string;
-    jurisdiction?: string;
+    /** GSTIN (15 chars) — validated client-side; state derived from first two digits. */
+    gstin?: string;
+    /** PAN (10 chars, AAAAA9999A). */
+    pan?: string;
+    /** Business constitution. */
+    constitution?:
+      | "proprietorship"
+      | "partnership"
+      | "llp"
+      | "private_limited"
+      | "public_limited"
+      | "other";
     registeredAddress: {
       line1: string;
       city: string;
@@ -103,8 +55,6 @@ export type CustomerOnboardingData = {
     /** When true, trader address stays a copy of the registered address (persisted with drafts). */
     traderSameAsRegistered?: boolean;
   };
-  /** Full structured Companies House profile snapshot (from GET /company/{number}). */
-  companies_house?: CompaniesHouseProfileSnapshot;
   contact: {
     phone: string;
     email: string;
@@ -112,8 +62,6 @@ export type CustomerOnboardingData = {
   directors: DirectorEntry[];
   tax: {
     utr: string;
-    /** Companies House / gateway authentication code when applicable. */
-    auth_code: string;
     vat_number: string;
     vat_quarter: string;
     /** Next VAT return due date (YYYY-MM-DD). */
@@ -154,25 +102,6 @@ export type CustomerOnboardingData = {
   subscription_selected_service_ids?: string[];
   /** Denormalised names for selected service ids (PDF/export). */
   subscription_selected_services?: { id: string; name: string }[];
-  agent: {
-    name: string;
-    address: string;
-    postcode: string;
-    phone: string;
-    agent_code_sa: string;
-    agent_code_ct: string;
-    client_reference: string;
-    /** Agent Government Gateway identifier (HMRC 64-8 CIS / PAYE sections). */
-    government_gateway_id: string;
-    /** PAYE Agent ID code (HMRC 64-8 CIS / PAYE sections; distinct from SA/CT agent codes). */
-    paye_agent_id_code: string;
-  };
-  bank: {
-    account_holder_name: string;
-    account_number: string;
-    sort_code: string;
-    bank_address: string;
-  };
   /**
    * Step 3 (Change of accountant): letter addressee — the outgoing accountant.
    * Not filled from company or trader address; user enters manually.
@@ -185,40 +114,6 @@ export type CustomerOnboardingData = {
       postcode: string;
       country?: string;
     };
-  };
-  authorization: {
-    self_assessment: boolean;
-    partnership: boolean;
-    trust: boolean;
-    vat: boolean;
-    paye: boolean;
-    corporation_tax: boolean;
-    tax_credits: boolean;
-    cis: boolean;
-  };
-  /** HMRC 64-8 tick boxes, per-section reference boxes, and joint tax-credit claimant (step 2). */
-  hmrc_options: {
-    utr_not_yet_issued: boolean;
-    send_statement_to_agent: boolean;
-    vat_not_registered: boolean;
-    cis_receive_online: boolean;
-    cis_receive_phone_writing: boolean;
-    paye_receive_online: boolean;
-    paye_receive_phone_writing: boolean;
-    joint_claimant_name: string;
-    joint_claimant_ni_number: string;
-    ref_self_assessment_ni_number: string;
-    ref_self_assessment_utr: string;
-    ref_trust_utr: string;
-    ref_individual_paye_ni_number: string;
-    ref_corporation_tax_utr: string;
-    ref_tax_credits_ni_number: string;
-    ref_cis_paye_ref: string;
-    ref_employers_paye_ref: string;
-    cis_government_gateway_id: string;
-    cis_paye_agent_id_code: string;
-    employers_government_gateway_id: string;
-    employers_paye_agent_id_code: string;
   };
   /** Internal office fields (step 1 � not shown to the client on paper except in the office-use PDF block). */
   office_use: {
@@ -240,7 +135,7 @@ export type CustomerOnboardingData = {
     /** Online Access row. */
     online_access: {
       companies_house: boolean;
-      hmrc: boolean;
+      gst: boolean;
       paye: boolean;
       vat: boolean;
       bank: boolean;
@@ -250,9 +145,9 @@ export type CustomerOnboardingData = {
   };
   signatures: {
     /**
-     * Set on step 4: how the four forms are signed.
-     * `in_person` — pad on each step (remote signing hidden on steps 1–3).
-     * `remote_email` — one email on step 4 sends DocuSeal for all four documents (single recipient).
+     * How the documents are signed.
+     * `in_person` — pad on each step (remote signing hidden on steps before the last).
+     * `remote_email` — one email sends DocuSeal for all remaining documents (single recipient).
      */
     capture_mode?: "in_person" | "remote_email";
     client_registration: {
@@ -261,22 +156,12 @@ export type CustomerOnboardingData = {
       date: string;
       signature: string;
     };
-    hmrc_64_8: {
-      name: string;
-      date: string;
-      signature: string;
-    };
     change_accountant: {
       name: string;
       date: string;
       signature: string;
     };
-    direct_debit: {
-      name: string;
-      date: string;
-      signature: string;
-    };
-    /** Per-wizard-step signature slots (1�4 align with onboarding steps). Mirrors named keys for exports. */
+    /** Per-wizard-step signature slots. Mirrors named keys for exports. */
     by_form_index?: Record<
       string,
       {
@@ -290,26 +175,6 @@ export type CustomerOnboardingData = {
   };
 };
 
-/** Companies House search hits (companies only), from GET /api/company-lookup/search */
-export type CompaniesHouseSearchItem = {
-  company_number: string;
-  title: string;
-  company_status: string;
-  company_type: string;
-  date_of_creation: string | null;
-  address_snippet: string | null;
-  description: string | null;
-};
-
-export type CompaniesHouseSearchResponse = {
-  items: CompaniesHouseSearchItem[];
-  total_results: number;
-  page_number: number;
-  items_per_page: number;
-  start_index: number;
-  next_start_index: number;
-};
-
 /** API lookup returns nested partials in the same shape (snake_case). */
 export type CompanyLookupPatch = Partial<{
   company: Partial<{
@@ -319,13 +184,9 @@ export type CompanyLookupPatch = Partial<{
     nature_of_business: string;
     year_end: string;
     paye_number: string;
-    company_status: string;
-    date_of_creation: string;
-    jurisdiction: string;
     address: Partial<{ line1: string; city: string; postcode: string; country: string }>;
   }>;
   contact: Partial<{ phone: string; email: string }>;
-  companies_house: CompaniesHouseProfileSnapshot;
 }>;
 
 export const BUSINESS_TYPE_OPTIONS = [
@@ -364,16 +225,6 @@ export function isSoleTraderOrPartnershipCompanyType(type: string | null | undef
   return isSoleTraderCompanyType(type) || isPartnershipCompanyType(type);
 }
 
-/** Companies House auth codes apply to incorporated entities, not sole traders or partnerships. */
-export function showCompaniesHouseAuthCode(type: string | null | undefined): boolean {
-  return !isSoleTraderOrPartnershipCompanyType(type);
-}
-
-/** HMRC agent codes (SA/CT) on step 2 are omitted for sole traders and partnerships. */
-export function showHmrcAgentCodes(type: string | null | undefined): boolean {
-  return !isSoleTraderOrPartnershipCompanyType(type);
-}
-
 /** Onboarding `company.type` uses `BUSINESS_TYPE_OPTIONS` labels, not Companies House legal `company_type` strings. */
 const ONBOARDING_BUSINESS_TYPE_VALUES_LC = new Set(
   (BUSINESS_TYPE_OPTIONS as readonly string[]).map((o) => o.toLowerCase()),
@@ -399,184 +250,8 @@ export function coerceOfficeNoted(noted: unknown): string {
   return String(noted);
 }
 
-const EMPTY_AGENT: CustomerOnboardingData["agent"] = {
-  name: "",
-  address: "",
-  postcode: "",
-  phone: "",
-  agent_code_sa: "2697XV",
-  agent_code_ct: "X7783A",
-  client_reference: "",
-  government_gateway_id: "",
-  paye_agent_id_code: "",
-};
-
-export const EMPTY_HMRC_OPTIONS: CustomerOnboardingData["hmrc_options"] = {
-  utr_not_yet_issued: false,
-  send_statement_to_agent: false,
-  vat_not_registered: false,
-  cis_receive_online: false,
-  cis_receive_phone_writing: false,
-  paye_receive_online: false,
-  paye_receive_phone_writing: false,
-  joint_claimant_name: "",
-  joint_claimant_ni_number: "",
-  ref_self_assessment_ni_number: "",
-  ref_self_assessment_utr: "",
-  ref_trust_utr: "",
-  ref_individual_paye_ni_number: "",
-  ref_corporation_tax_utr: "",
-  ref_tax_credits_ni_number: "",
-  ref_cis_paye_ref: "",
-  ref_employers_paye_ref: "",
-  cis_government_gateway_id: "",
-  cis_paye_agent_id_code: "",
-  employers_government_gateway_id: "",
-  employers_paye_agent_id_code: "",
-};
-
-/** Practice defaults for HMRC 64-8 agent block (step 2). */
-export const DEFAULT_PRACTICE_AGENT_STATIC = {
-  name: "Dhanbiz Accounting Services Pvt Ltd",
-  address: "128 City Road, London",
-  postcode: "EC1V 2NX",
-  phone: "03 300 300 303",
-} as const;
-
 /** Fixed CIS reference (matches new onboarding default). */
 export const DEFAULT_PRACTICE_CIS_REFERENCE = "HZ5896";
-
-/** Matches refs produced by `defaultAgentClientReference` (slug = lowercase alphanumerics only). */
-const AUTO_CLIENT_REF_PATTERN = /^(?:3K|DHB)-[a-z0-9]+-\d+$/i;
-
-const CLIENT_REF_SEQ_LS_KEY = "docparser.clientReferenceSeq";
-
-/** Monotonic counter in localStorage for new auto-generated client references. */
-export function allocClientReferenceSequence(): number {
-  try {
-    const w =
-      typeof globalThis !== "undefined" && "window" in globalThis
-        ? (globalThis as { window?: { localStorage?: { getItem(k: string): string | null; setItem(k: string, v: string): void } } }).window
-        : undefined;
-    if (!w?.localStorage) return Math.floor(Date.now() % 1_000_000);
-    const prev = Number.parseInt(w.localStorage.getItem(CLIENT_REF_SEQ_LS_KEY) ?? "0", 10);
-    const next = (Number.isFinite(prev) && prev >= 0 ? prev : 0) + 1;
-    w.localStorage.setItem(CLIENT_REF_SEQ_LS_KEY, String(next));
-    return next;
-  } catch {
-    return Math.floor(Date.now() % 1_000_000);
-  }
-}
-
-/** Company / trader display name → single lowercase slug (no spaces or punctuation). */
-export function slugifyCompanyOrClientName(raw: string): string {
-  const s = String(raw ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "")
-    .slice(0, 48);
-  return s || "client";
-}
-
-/**
- * Client reference: `DHB-{companyOrClientNameSlug}-{incrementalNumber}`.
- * Increment comes from `allocClientReferenceSequence()` on first auto-assign; if `currentReference`
- * already matches our auto pattern, the same numeric suffix is kept when only the name slug changes.
- */
-export function defaultAgentClientReference(
-  data: Pick<CustomerOnboardingData, "company">,
-  currentReference?: string | null,
-): string {
-  const slug = slugifyCompanyOrClientName(data.company?.name ?? "");
-  const cur = String(currentReference ?? "").trim();
-  const m = /^(?:3K|DHB)-[a-z0-9]+-(\d+)$/i.exec(cur);
-  const seq = m ? m[1] : String(allocClientReferenceSequence());
-  return `DHB-${slug}-${seq}`;
-}
-
-export function isAutoFilledAgentClientReference(value: string): boolean {
-  return AUTO_CLIENT_REF_PATTERN.test(String(value ?? "").trim());
-}
-
-/**
- * HMRC 64-8 practice agent block must never be blank: drafts, autosaves, and older JSON often
- * store empty strings while `company.name` stays stable, so UI effects keyed only on the name
- * would not re-run. Call after revive, merge, and when building empty onboarding.
- */
-export function ensurePracticeAgentBlock(data: CustomerOnboardingData): CustomerOnboardingData {
-  const a = data.agent;
-  const next = { ...a };
-  let changed = false;
-  if (!String(next.name ?? "").trim()) {
-    next.name = DEFAULT_PRACTICE_AGENT_STATIC.name;
-    changed = true;
-  }
-  if (!String(next.address ?? "").trim()) {
-    next.address = DEFAULT_PRACTICE_AGENT_STATIC.address;
-    changed = true;
-  }
-  if (!String(next.postcode ?? "").trim()) {
-    next.postcode = DEFAULT_PRACTICE_AGENT_STATIC.postcode;
-    changed = true;
-  }
-  if (!String(next.phone ?? "").trim()) {
-    next.phone = DEFAULT_PRACTICE_AGENT_STATIC.phone;
-    changed = true;
-  }
-  if (!String(next.agent_code_sa ?? "").trim()) {
-    next.agent_code_sa = EMPTY_AGENT.agent_code_sa;
-    changed = true;
-  }
-  if (!String(next.agent_code_ct ?? "").trim()) {
-    next.agent_code_ct = EMPTY_AGENT.agent_code_ct;
-    changed = true;
-  }
-  if (!String(next.client_reference ?? "").trim()) {
-    next.client_reference = defaultAgentClientReference(data, next.client_reference);
-    changed = true;
-  }
-  return changed ? { ...data, agent: next } : data;
-}
-
-/**
- * Copy step-1 tax/director references into HMRC 64-8 `hmrc_options` boxed fields when still empty.
- * VAT is read from `tax.vat_number` directly on the 64-8 form; only NI and UTR need copying here.
- */
-export function ensureHmrcRefsFromStep1(data: CustomerOnboardingData): CustomerOnboardingData {
-  const d0 = data.directors[0];
-  const ni = String(d0?.ni_number ?? "").trim();
-  const companyUtr = String(data.tax.utr ?? "").trim();
-  const personalUtr = String(d0?.personal_utr ?? "").trim();
-  const saUtr = personalUtr || companyUtr;
-
-  const ho = data.hmrc_options;
-  const nextHo = { ...ho };
-  let changed = false;
-
-  const assignIfEmpty = (
-    key:
-      | "ref_self_assessment_ni_number"
-      | "ref_individual_paye_ni_number"
-      | "ref_tax_credits_ni_number"
-      | "ref_self_assessment_utr"
-      | "ref_corporation_tax_utr",
-    value: string,
-  ) => {
-    if (!value) return;
-    const cur = String(nextHo[key] ?? "").trim();
-    if (cur) return;
-    nextHo[key] = value;
-    changed = true;
-  };
-
-  assignIfEmpty("ref_self_assessment_ni_number", ni);
-  assignIfEmpty("ref_individual_paye_ni_number", ni);
-  assignIfEmpty("ref_tax_credits_ni_number", ni);
-  assignIfEmpty("ref_self_assessment_utr", saUtr);
-  assignIfEmpty("ref_corporation_tax_utr", companyUtr);
-
-  return changed ? { ...data, hmrc_options: nextHo } : data;
-}
 
 export function emptyDirector(): DirectorEntry {
   return {
@@ -609,7 +284,7 @@ function normalizeStoredSignatureDate(saved: unknown, fallbackDate: string): str
 
 export function createEmptyCustomerOnboardingData(): CustomerOnboardingData {
   const signatureDateToday = isoDateLocal();
-  return ensurePracticeAgentBlock({
+  return {
     company: {
       name: "",
       number: "",
@@ -617,6 +292,8 @@ export function createEmptyCustomerOnboardingData(): CustomerOnboardingData {
       nature_of_business: "",
       year_end: "",
       paye_number: "",
+      gstin: "",
+      pan: "",
       // ✅ ADD THESE - they are required by your type
       registeredAddress: {
         line1: "",
@@ -636,7 +313,6 @@ export function createEmptyCustomerOnboardingData(): CustomerOnboardingData {
     directors: [emptyDirector()],
     tax: {
       utr: "",
-      auth_code: "",
       vat_number: "",
       vat_quarter: "",
       vat_return_due_date: "",
@@ -663,13 +339,6 @@ export function createEmptyCustomerOnboardingData(): CustomerOnboardingData {
     subscription_matrix_plan_price_inc_vat_gbp: null,
     subscription_selected_service_ids: [],
     subscription_selected_services: [],
-    agent: { ...EMPTY_AGENT },
-    bank: {
-      account_holder_name: "",
-      account_number: "",
-      sort_code: "",
-      bank_address: "",
-    },
     change_of_accountant: {
       previous_accountant_name: "",
       previous_accountant_address: {
@@ -679,17 +348,6 @@ export function createEmptyCustomerOnboardingData(): CustomerOnboardingData {
         country: "",
       },
     },
-    authorization: {
-      self_assessment: false,
-      partnership: false,
-      trust: false,
-      vat: false,
-      paye: false,
-      corporation_tax: true,
-      tax_credits: false,
-      cis: true,
-    },
-    hmrc_options: { ...EMPTY_HMRC_OPTIONS },
     office_use: {
       noted: "",
       internal_remarks: "",
@@ -698,7 +356,7 @@ export function createEmptyCustomerOnboardingData(): CustomerOnboardingData {
       address_proof: { utility_bill: false, bank_statement: false },
       online_access: {
         companies_house: false,
-        hmrc: false,
+        gst: false,
         paye: false,
         vat: false,
         bank: false,
@@ -708,12 +366,10 @@ export function createEmptyCustomerOnboardingData(): CustomerOnboardingData {
     },
     signatures: {
       client_registration: { name: "", position: "", date: signatureDateToday, signature: "" },
-      hmrc_64_8: { name: "", date: signatureDateToday, signature: "" },
       change_accountant: { name: "", date: signatureDateToday, signature: "" },
-      direct_debit: { name: "", date: signatureDateToday, signature: "" },
       by_form_index: {},
     },
-  });
+  };
 }
 
 function takeStr(v: unknown): string | undefined {
@@ -733,20 +389,15 @@ export function mergeCompanyLookup(
       ...current.company,
       registeredAddress: { ...current.company.registeredAddress },
     },
-    companies_house: current.companies_house,
     contact: { ...current.contact },
     tax: { ...current.tax },
     services: { ...current.services, payroll: { ...current.services.payroll } },
-    agent: { ...current.agent },
-    bank: { ...current.bank },
     change_of_accountant: {
       previous_accountant_name: current.change_of_accountant.previous_accountant_name,
       previous_accountant_address: {
         ...current.change_of_accountant.previous_accountant_address,
       },
     },
-    authorization: { ...current.authorization },
-    hmrc_options: { ...current.hmrc_options },
     office_use: {
       ...current.office_use,
       director_photo_id: { ...current.office_use.director_photo_id },
@@ -758,9 +409,7 @@ export function mergeCompanyLookup(
         ? { capture_mode: current.signatures.capture_mode }
         : {}),
       client_registration: { ...current.signatures.client_registration },
-      hmrc_64_8: { ...current.signatures.hmrc_64_8 },
       change_accountant: { ...current.signatures.change_accountant },
-      direct_debit: { ...current.signatures.direct_debit },
       ...(current.signatures.by_form_index
         ? { by_form_index: { ...current.signatures.by_form_index } }
         : {}),
@@ -775,15 +424,11 @@ export function mergeCompanyLookup(
     const ty = takeStr(pc.type);
     const nob = takeStr(pc.nature_of_business);
     const ye = takeStr(pc.year_end);
-    const cst = takeStr(pc.company_status);
-    const doc = takeStr(pc.date_of_creation);
-    const jur = takeStr(pc.jurisdiction);
     if (n !== undefined) next.company.name = n;
     if (num !== undefined) next.company.number = num;
     /**
      * Do not overwrite `company.type` once the user has chosen a business type (e.g. Partnership).
-     * Companies House merge maps legal `type` to labels like "Limited company", which would
-     * replace Partnership after lookup. Only fill from CH when the field is still empty.
+     * Only fill from lookup when the field is still empty.
      */
     if (ty !== undefined && !current.company.type.trim()) {
       const norm = ty.trim().toLowerCase();
@@ -793,9 +438,6 @@ export function mergeCompanyLookup(
     }
     if (nob !== undefined) next.company.nature_of_business = nob;
     if (ye !== undefined) next.company.year_end = ye;
-    if (cst !== undefined) next.company.company_status = cst;
-    if (doc !== undefined) next.company.date_of_creation = doc;
-    if (jur !== undefined) next.company.jurisdiction = jur;
     if (pc.address) {
       const a = pc.address;
       const l1 = takeStr(a.line1);
@@ -809,10 +451,6 @@ export function mergeCompanyLookup(
     }
   }
 
-  if (patch.companies_house && typeof patch.companies_house === "object") {
-    next.companies_house = { ...patch.companies_house };
-  }
-
   if (next.company.traderSameAsRegistered) {
     next.company.traderAddress = { ...next.company.registeredAddress };
   }
@@ -824,7 +462,7 @@ export function mergeCompanyLookup(
     if (em !== undefined) next.contact.email = em;
   }
 
-  return ensurePracticeAgentBlock(next);
+  return next;
 }
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {
@@ -882,20 +520,22 @@ export function reviveCustomerOnboarding(raw: unknown): CustomerOnboardingData {
         typeof c.nature_of_business === "string" ? c.nature_of_business : base.company.nature_of_business,
       year_end: typeof c.year_end === "string" ? c.year_end : base.company.year_end,
       paye_number: typeof c.paye_number === "string" ? c.paye_number : base.company.paye_number,
-      company_status:
-        typeof c.company_status === "string" ? c.company_status : base.company.company_status,
-      date_of_creation:
-        typeof c.date_of_creation === "string" ? c.date_of_creation : base.company.date_of_creation,
-      jurisdiction: typeof c.jurisdiction === "string" ? c.jurisdiction : base.company.jurisdiction,
+      gstin: typeof c.gstin === "string" ? c.gstin : base.company.gstin,
+      pan: typeof c.pan === "string" ? c.pan : base.company.pan,
+      constitution:
+        c.constitution === "proprietorship" ||
+        c.constitution === "partnership" ||
+        c.constitution === "llp" ||
+        c.constitution === "private_limited" ||
+        c.constitution === "public_limited" ||
+        c.constitution === "other"
+          ? c.constitution
+          : base.company.constitution,
       registeredAddress: { ...base.company.registeredAddress, ...(isPlainObject(c.registeredAddress) ? reviveAddress(c.registeredAddress) : {}) },
       traderAddress: { ...base.company.traderAddress, ...(isPlainObject(c.traderAddress) ? reviveAddress(c.traderAddress) : {}) },
       traderSameAsRegistered:
         typeof c.traderSameAsRegistered === "boolean" ? c.traderSameAsRegistered : base.company.traderSameAsRegistered,
     };
-  }
-
-  if (isPlainObject(o.companies_house)) {
-    base.companies_house = o.companies_house as CompaniesHouseProfileSnapshot;
   }
 
   if (isPlainObject(o.contact)) {
@@ -914,7 +554,6 @@ export function reviveCustomerOnboarding(raw: unknown): CustomerOnboardingData {
     const t = o.tax as Record<string, unknown>;
     base.tax = {
       utr: typeof t.utr === "string" ? t.utr : base.tax.utr,
-      auth_code: typeof t.auth_code === "string" ? t.auth_code : base.tax.auth_code,
       vat_number: typeof t.vat_number === "string" ? t.vat_number : base.tax.vat_number,
       vat_quarter: typeof t.vat_quarter === "string" ? t.vat_quarter : base.tax.vat_quarter,
       vat_return_due_date:
@@ -946,104 +585,6 @@ export function reviveCustomerOnboarding(raw: unknown): CustomerOnboardingData {
     };
   }
 
-  if (isPlainObject(o.agent)) {
-    const a = o.agent as Record<string, unknown>;
-    base.agent = {
-      name: typeof a.name === "string" ? a.name : base.agent.name,
-      address: typeof a.address === "string" ? a.address : base.agent.address,
-      postcode: typeof a.postcode === "string" ? a.postcode : base.agent.postcode,
-      phone: typeof a.phone === "string" ? a.phone : base.agent.phone,
-      agent_code_sa: typeof a.agent_code_sa === "string" ? a.agent_code_sa : base.agent.agent_code_sa,
-      agent_code_ct: typeof a.agent_code_ct === "string" ? a.agent_code_ct : base.agent.agent_code_ct,
-      client_reference:
-        typeof a.client_reference === "string" ? a.client_reference : base.agent.client_reference,
-      government_gateway_id:
-        typeof a.government_gateway_id === "string"
-          ? a.government_gateway_id
-          : base.agent.government_gateway_id,
-      paye_agent_id_code:
-        typeof a.paye_agent_id_code === "string" ? a.paye_agent_id_code : base.agent.paye_agent_id_code,
-    };
-  }
-
-  if (isPlainObject(o.hmrc_options)) {
-    const h = o.hmrc_options as Record<string, unknown>;
-    const b = base.hmrc_options;
-    base.hmrc_options = {
-      utr_not_yet_issued:
-        typeof h.utr_not_yet_issued === "boolean" ? h.utr_not_yet_issued : b.utr_not_yet_issued,
-      send_statement_to_agent:
-        typeof h.send_statement_to_agent === "boolean"
-          ? h.send_statement_to_agent
-          : b.send_statement_to_agent,
-      vat_not_registered:
-        typeof h.vat_not_registered === "boolean" ? h.vat_not_registered : b.vat_not_registered,
-      cis_receive_online:
-        typeof h.cis_receive_online === "boolean" ? h.cis_receive_online : b.cis_receive_online,
-      cis_receive_phone_writing:
-        typeof h.cis_receive_phone_writing === "boolean"
-          ? h.cis_receive_phone_writing
-          : b.cis_receive_phone_writing,
-      paye_receive_online:
-        typeof h.paye_receive_online === "boolean" ? h.paye_receive_online : b.paye_receive_online,
-      paye_receive_phone_writing:
-        typeof h.paye_receive_phone_writing === "boolean"
-          ? h.paye_receive_phone_writing
-          : b.paye_receive_phone_writing,
-      joint_claimant_name:
-        typeof h.joint_claimant_name === "string" ? h.joint_claimant_name : b.joint_claimant_name,
-      joint_claimant_ni_number:
-        typeof h.joint_claimant_ni_number === "string"
-          ? h.joint_claimant_ni_number
-          : b.joint_claimant_ni_number,
-      ref_self_assessment_ni_number:
-        typeof h.ref_self_assessment_ni_number === "string"
-          ? h.ref_self_assessment_ni_number
-          : b.ref_self_assessment_ni_number,
-      ref_self_assessment_utr:
-        typeof h.ref_self_assessment_utr === "string" ? h.ref_self_assessment_utr : b.ref_self_assessment_utr,
-      ref_trust_utr: typeof h.ref_trust_utr === "string" ? h.ref_trust_utr : b.ref_trust_utr,
-      ref_individual_paye_ni_number:
-        typeof h.ref_individual_paye_ni_number === "string"
-          ? h.ref_individual_paye_ni_number
-          : b.ref_individual_paye_ni_number,
-      ref_corporation_tax_utr:
-        typeof h.ref_corporation_tax_utr === "string" ? h.ref_corporation_tax_utr : b.ref_corporation_tax_utr,
-      ref_tax_credits_ni_number:
-        typeof h.ref_tax_credits_ni_number === "string"
-          ? h.ref_tax_credits_ni_number
-          : b.ref_tax_credits_ni_number,
-      ref_cis_paye_ref: typeof h.ref_cis_paye_ref === "string" ? h.ref_cis_paye_ref : b.ref_cis_paye_ref,
-      ref_employers_paye_ref:
-        typeof h.ref_employers_paye_ref === "string" ? h.ref_employers_paye_ref : b.ref_employers_paye_ref,
-      cis_government_gateway_id:
-        typeof h.cis_government_gateway_id === "string"
-          ? h.cis_government_gateway_id
-          : b.cis_government_gateway_id,
-      cis_paye_agent_id_code:
-        typeof h.cis_paye_agent_id_code === "string" ? h.cis_paye_agent_id_code : b.cis_paye_agent_id_code,
-      employers_government_gateway_id:
-        typeof h.employers_government_gateway_id === "string"
-          ? h.employers_government_gateway_id
-          : b.employers_government_gateway_id,
-      employers_paye_agent_id_code:
-        typeof h.employers_paye_agent_id_code === "string"
-          ? h.employers_paye_agent_id_code
-          : b.employers_paye_agent_id_code,
-    };
-  }
-
-  if (isPlainObject(o.bank)) {
-    const b = o.bank as Record<string, unknown>;
-    base.bank = {
-      account_holder_name:
-        typeof b.account_holder_name === "string" ? b.account_holder_name : base.bank.account_holder_name,
-      account_number: typeof b.account_number === "string" ? b.account_number : base.bank.account_number,
-      sort_code: typeof b.sort_code === "string" ? b.sort_code : base.bank.sort_code,
-      bank_address: typeof b.bank_address === "string" ? b.bank_address : base.bank.bank_address,
-    };
-  }
-
   if (isPlainObject(o.change_of_accountant)) {
     const ca = o.change_of_accountant as Record<string, unknown>;
     const addr = isPlainObject(ca.previous_accountant_address)
@@ -1058,22 +599,6 @@ export function reviveCustomerOnboarding(raw: unknown): CustomerOnboardingData {
         ...base.change_of_accountant.previous_accountant_address,
         ...reviveAddress(addr),
       },
-    };
-  }
-
-  if (isPlainObject(o.authorization)) {
-    const a = o.authorization as Record<string, unknown>;
-    base.authorization = {
-      self_assessment:
-        typeof a.self_assessment === "boolean" ? a.self_assessment : base.authorization.self_assessment,
-      partnership: typeof a.partnership === "boolean" ? a.partnership : base.authorization.partnership,
-      trust: typeof a.trust === "boolean" ? a.trust : base.authorization.trust,
-      vat: typeof a.vat === "boolean" ? a.vat : base.authorization.vat,
-      paye: typeof a.paye === "boolean" ? a.paye : base.authorization.paye,
-      corporation_tax:
-        typeof a.corporation_tax === "boolean" ? a.corporation_tax : base.authorization.corporation_tax,
-      tax_credits: typeof a.tax_credits === "boolean" ? a.tax_credits : base.authorization.tax_credits,
-      cis: typeof a.cis === "boolean" ? a.cis : base.authorization.cis,
     };
   }
 
@@ -1104,7 +629,7 @@ export function reviveCustomerOnboarding(raw: unknown): CustomerOnboardingData {
       online_access: {
         companies_house:
           typeof oa?.companies_house === "boolean" ? oa.companies_house : b.online_access.companies_house,
-        hmrc: typeof oa?.hmrc === "boolean" ? oa.hmrc : b.online_access.hmrc,
+        gst: typeof oa?.gst === "boolean" ? oa.gst : b.online_access.gst,
         paye: typeof oa?.paye === "boolean" ? oa.paye : b.online_access.paye,
         vat: typeof oa?.vat === "boolean" ? oa.vat : b.online_access.vat,
         bank: typeof oa?.bank === "boolean" ? oa.bank : b.online_access.bank,
@@ -1177,9 +702,7 @@ export function reviveCustomerOnboarding(raw: unknown): CustomerOnboardingData {
     base.signatures = {
       ...(cm === "in_person" || cm === "remote_email" ? { capture_mode: cm } : {}),
       client_registration: reviveSigBlock4(sig.client_registration, base.signatures.client_registration),
-      hmrc_64_8: reviveSigBlock3(sig.hmrc_64_8, base.signatures.hmrc_64_8),
       change_accountant: reviveSigBlock3(sig.change_accountant, base.signatures.change_accountant),
-      direct_debit: reviveSigBlock3(sig.direct_debit, base.signatures.direct_debit),
       ...(isPlainObject(byIdx)
         ? {
             by_form_index: {
@@ -1190,7 +713,7 @@ export function reviveCustomerOnboarding(raw: unknown): CustomerOnboardingData {
     };
   }
 
-  return ensurePracticeAgentBlock(base);
+  return base;
 }
 
 function reviveAddress(a: Record<string, unknown>): Partial<CustomerOnboardingData["company"]["registeredAddress"]> {
@@ -1232,8 +755,8 @@ function reviveSigBlock4(
 
 function reviveSigBlock3(
   raw: unknown,
-  fallback: CustomerOnboardingData["signatures"]["hmrc_64_8"],
-): CustomerOnboardingData["signatures"]["hmrc_64_8"] {
+  fallback: CustomerOnboardingData["signatures"]["change_accountant"],
+): CustomerOnboardingData["signatures"]["change_accountant"] {
   if (!isPlainObject(raw)) return { ...fallback };
   const s = raw as Record<string, unknown>;
   return {
@@ -1249,7 +772,6 @@ function migrateLegacyFlatOnboarding(o: Record<string, unknown>): CustomerOnboar
   const str = (k: string) => (typeof o[k] === "string" ? (o[k] as string) : "");
 
   const legacyServices = o.services as Record<string, unknown> | undefined;
-  const legacyTaxAuth = o.taxAuthorization as Record<string, unknown> | undefined;
   const payrollEnabled =
     typeof legacyServices?.payroll === "boolean" ? (legacyServices.payroll as boolean) : false;
 
@@ -1273,7 +795,6 @@ function migrateLegacyFlatOnboarding(o: Record<string, unknown>): CustomerOnboar
     directors: Array.isArray(o.directors) ? o.directors : empty.directors,
     tax: {
       utr: str("utr"),
-      auth_code: str("auth_code") || str("authCode") || str("companiesHouseAuthCode"),
       vat_number: str("vatNumber"),
       vat_quarter: str("vatQuarter"),
       vat_return_due_date: str("vatReturnDueDate"),
@@ -1293,32 +814,6 @@ function migrateLegacyFlatOnboarding(o: Record<string, unknown>): CustomerOnboar
         frequency: typeof o.payrollFrequency === "string" ? o.payrollFrequency : "",
       },
     },
-    agent: {
-      name: str("agentName") || empty.agent.name,
-      address: str("agentAddress") || empty.agent.address,
-      postcode: str("agentPostcode") || empty.agent.postcode,
-      phone: str("agentPhone"),
-      agent_code_sa: str("agentCodeSA"),
-      agent_code_ct: str("agentCodeCT"),
-      client_reference: str("clientReference"),
-    },
-    bank: {
-      account_holder_name: str("accountHolderName"),
-      account_number: str("accountNumber"),
-      sort_code: str("sortCode"),
-      bank_address: str("bankAddress"),
-    },
-    authorization: {
-      self_assessment: !!legacyTaxAuth?.selfAssessment,
-      partnership: !!legacyTaxAuth?.partnership,
-      trust: !!legacyTaxAuth?.trust,
-      vat: !!legacyTaxAuth?.vat,
-      paye: !!legacyTaxAuth?.paye,
-      corporation_tax: true,
-      tax_credits: false,
-      cis: true,
-    },
-    hmrc_options: { ...EMPTY_HMRC_OPTIONS },
     signatures: {
       client_registration: {
         name: str("signatoryName"),
@@ -1326,19 +821,9 @@ function migrateLegacyFlatOnboarding(o: Record<string, unknown>): CustomerOnboar
         date: str("signatureDate"),
         signature: str("signature"),
       },
-      hmrc_64_8: {
-        name: str("signatoryName"),
-        date: str("signatureDate"),
-        signature: str("signature"),
-      },
       change_accountant: {
         name: str("signatoryName"),
         date: str("changeOfAccountantLetterDate") || str("signatureDate"),
-        signature: str("signature"),
-      },
-      direct_debit: {
-        name: str("signatoryName"),
-        date: str("signatureDate"),
         signature: str("signature"),
       },
     },

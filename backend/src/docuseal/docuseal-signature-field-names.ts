@@ -1,11 +1,13 @@
 import type { OnboardingSignatureSlot } from "../entities/customer-form-submission.entity";
 
-/** Recommended DocuSeal control names per onboarding step (see docs/docuseal-onboarding-limited-company.md). */
-export const DOCUSEAL_SIGNATURE_NAME_BY_SLOT: Record<OnboardingSignatureSlot, string> = {
+/**
+ * Recommended DocuSeal control names per onboarding document (see docs/docuseal-onboarding-limited-company.md).
+ * Only `client_registration` and `change_accountant` are signable now; other legacy slots are
+ * intentionally omitted (falls back to a generic name in {@link resolveWritableSignatureFieldNames}).
+ */
+export const DOCUSEAL_SIGNATURE_NAME_BY_SLOT: Partial<Record<OnboardingSignatureSlot, string>> = {
   client_registration: "Signature_client_registration",
-  hmrc_64_8: "Signature_hmrc_64_8",
   change_accountant: "Signature_change_accountant",
-  direct_debit: "Signature_direct_debit",
 };
 
 function parseEnvSignatureFieldNames(env: string | undefined): Set<string> {
@@ -29,8 +31,9 @@ export function resolveWritableSignatureFieldNames(
 ): Set<string> {
   const out = parseEnvSignatureFieldNames(env);
   out.add("signature");
-  if (signatureTarget) {
-    out.add(DOCUSEAL_SIGNATURE_NAME_BY_SLOT[signatureTarget].toLowerCase());
+  const named = signatureTarget ? DOCUSEAL_SIGNATURE_NAME_BY_SLOT[signatureTarget] : undefined;
+  if (named) {
+    out.add(named.toLowerCase());
   }
   return out;
 }

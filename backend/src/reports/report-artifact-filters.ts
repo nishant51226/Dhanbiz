@@ -6,7 +6,6 @@ const FILE_REF =
 
 const KNOWN_ONBOARDING_SIGNATURE_NAMES = new Set([
   "client-registration-signature.png",
-  "hmrc-64-8-signature.png",
   "change-accountant-signature.png",
   "direct-debit-signature.png",
 ]);

@@ -152,15 +152,14 @@ function parsePositiveTemplateId(raw: string): number | null {
 
 /** Per-step template ids; each falls back to `DOCUSEAL_TEMPLATE_ID` when unset. */
 function templateIdForTarget(target: DocusealSignatureTarget): number {
+  if (target !== "client_registration" && target !== "change_accountant") {
+    throw new BadRequestException(
+      `DocuSeal signing only supports client_registration and change_accountant (got ${target})`,
+    );
+  }
   const main = process.env.DOCUSEAL_TEMPLATE_ID ?? "";
   const explicit =
-    target === "client_registration"
-      ? main
-      : target === "hmrc_64_8"
-        ? (process.env.DOCUSEAL_TEMPLATE_ID_HMRC_64_8 ?? "")
-        : target === "change_accountant"
-          ? (process.env.DOCUSEAL_TEMPLATE_ID_CHANGE_ACCOUNTANT ?? "")
-          : (process.env.DOCUSEAL_TEMPLATE_ID_DIRECT_DEBIT ?? "");
+    target === "client_registration" ? main : (process.env.DOCUSEAL_TEMPLATE_ID_CHANGE_ACCOUNTANT ?? "");
   const raw = explicit.trim() || main.trim();
   const id = parsePositiveTemplateId(raw);
   if (id === null) {

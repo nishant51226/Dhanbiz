@@ -1,11 +1,5 @@
 import type { CustomerOnboardingData } from "./customerOnboarding";
-import {
-  BUSINESS_TYPE_OPTIONS,
-  coerceOfficeNoted,
-  labelForOfficeApprovalStatus,
-  showCompaniesHouseAuthCode,
-  showHmrcAgentCodes,
-} from "./customerOnboarding";
+import { BUSINESS_TYPE_OPTIONS, coerceOfficeNoted, labelForOfficeApprovalStatus } from "./customerOnboarding";
 import { formatSignatureExportValue } from "./onboardingExportSections";
 
 const EMPTY = "\u2014";
@@ -31,8 +25,10 @@ export type ClientRegistrationFormModel = {
   businessTypes: CheckboxLine[];
   companyReg: string;
   yearEnd: string;
+  gstin: string;
+  pan: string;
+  constitution: string;
   utr: string;
-  authCode: string;
   vatNumber: string;
   vatQuarter: string;
   payeRef: string;
@@ -125,8 +121,10 @@ export function buildClientRegistrationFormModel(data: CustomerOnboardingData): 
     businessTypes,
     companyReg: data.company.number.trim(),
     yearEnd: data.company.year_end.trim(),
+    gstin: (data.company.gstin ?? "").trim(),
+    pan: (data.company.pan ?? "").trim(),
+    constitution: (data.company.constitution ?? "").trim(),
     utr: data.tax.utr.trim(),
-    authCode: data.tax.auth_code.trim(),
     vatNumber: data.tax.vat_number.trim(),
     vatQuarter: data.tax.vat_quarter.trim(),
     payeRef: data.tax.paye_ref.trim(),
@@ -151,13 +149,10 @@ export function buildAppendixSections(data: CustomerOnboardingData): AppendixSec
 
   const ni = data.tax.ni_number.trim();
   const cis = data.tax.cis_reference.trim();
-  const showAuthCode = showCompaniesHouseAuthCode(data.company.type);
-  const authCode = showAuthCode ? data.tax.auth_code.trim() : "";
-  if (ni || cis || authCode) {
+  if (ni || cis) {
     sections.push({
       title: "Additional tax references",
       rows: [
-        ...(showAuthCode ? [{ label: "Auth code", value: authCode || EMPTY }] : []),
         { label: "PAYE Ref", value: ni || EMPTY },
         { label: "CIS reference", value: cis || EMPTY },
       ],
@@ -183,33 +178,6 @@ export function buildAppendixSections(data: CustomerOnboardingData): AppendixSec
     });
   }
 
-  sections.push({
-    title: "Agent (64-8)",
-    rows: [
-      { label: "Name", value: data.agent.name.trim() || EMPTY },
-      { label: "Address", value: data.agent.address.trim() || EMPTY },
-      { label: "Postcode", value: data.agent.postcode.trim() || EMPTY },
-      { label: "Phone", value: data.agent.phone.trim() || EMPTY },
-      ...(showHmrcAgentCodes(data.company.type)
-        ? [
-            { label: "Agent code (SA)", value: data.agent.agent_code_sa.trim() || EMPTY },
-            { label: "Agent code (CT)", value: data.agent.agent_code_ct.trim() || EMPTY },
-          ]
-        : []),
-      { label: "Client reference", value: data.agent.client_reference.trim() || EMPTY },
-    ],
-  });
-
-  sections.push({
-    title: "Bank details",
-    rows: [
-      { label: "Account holder", value: data.bank.account_holder_name.trim() || EMPTY },
-      { label: "Account number", value: data.bank.account_number.trim() || EMPTY },
-      { label: "Sort code", value: data.bank.sort_code.trim() || EMPTY },
-      { label: "Bank address", value: data.bank.bank_address.trim() || EMPTY },
-    ],
-  });
-
   const paa = data.change_of_accountant.previous_accountant_address;
   sections.push({
     title: "Change of accountant - letter recipient",
@@ -222,22 +190,8 @@ export function buildAppendixSections(data: CustomerOnboardingData): AppendixSec
     ],
   });
 
-  const a = data.authorization;
-  sections.push({
-    title: "Tax authorisations",
-    rows: [
-      { label: "Self assessment", value: a.self_assessment ? "Yes" : "No" },
-      { label: "Partnership", value: a.partnership ? "Yes" : "No" },
-      { label: "Trust", value: a.trust ? "Yes" : "No" },
-      { label: "VAT", value: a.vat ? "Yes" : "No" },
-      { label: "PAYE", value: a.paye ? "Yes" : "No" },
-    ],
-  });
-
   const cr = data.signatures.client_registration;
-  const h = data.signatures.hmrc_64_8;
   const ca = data.signatures.change_accountant;
-  const dd = data.signatures.direct_debit;
 
   sections.push({
     title: "Signatures - Client registration",
@@ -249,27 +203,11 @@ export function buildAppendixSections(data: CustomerOnboardingData): AppendixSec
     ],
   });
   sections.push({
-    title: "Signatures - HMRC 64-8",
-    rows: [
-      { label: "Name", value: h.name.trim() || EMPTY },
-      { label: "Date", value: h.date.trim() || EMPTY },
-      { label: "Signature", value: formatSignatureExportValue(h.signature) },
-    ],
-  });
-  sections.push({
     title: "Signatures - Change of accountant",
     rows: [
       { label: "Name", value: ca.name.trim() || EMPTY },
       { label: "Date", value: ca.date.trim() || EMPTY },
       { label: "Signature", value: formatSignatureExportValue(ca.signature) },
-    ],
-  });
-  sections.push({
-    title: "Signatures - Direct debit",
-    rows: [
-      { label: "Name", value: dd.name.trim() || EMPTY },
-      { label: "Date", value: dd.date.trim() || EMPTY },
-      { label: "Signature", value: formatSignatureExportValue(dd.signature) },
     ],
   });
 

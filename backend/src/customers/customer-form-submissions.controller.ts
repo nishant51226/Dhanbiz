@@ -36,7 +36,6 @@ type BatchStatusesBody = { customerIds?: string[] };
 
 const DOCUSEAL_SIGNATURE_TARGETS = new Set<string>([
   "client_registration",
-  "hmrc_64_8",
   "change_accountant",
   "direct_debit",
 ]);

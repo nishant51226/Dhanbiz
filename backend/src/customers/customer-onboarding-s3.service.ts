@@ -15,15 +15,13 @@ import { OnboardingHtmlPdfService } from "./onboarding-html-pdf.service";
 import { OnboardingPdfSignatureHydrateService } from "./onboarding-pdf-signature-hydrate.service";
 import { reviveCustomerOnboarding } from "./onboarding-templates/customerOnboarding";
 
-/** One S3 object per wizard step (always four PDFs). */
+/** One S3 object per signable document (Registration + Change of accountant). */
 const ONBOARDING_DOCUMENT_FILES: readonly {
   formKey: OnboardingFormPdfKey;
   filename: string;
 }[] = [
   { formKey: "form_1", filename: "01-client-registration.pdf" },
-  { formKey: "form_2", filename: "02-hmrc-64-8.pdf" },
   { formKey: "form_3", filename: "03-change-of-accountant.pdf" },
-  { formKey: "form_4", filename: "04-direct-debit.pdf" },
 ];
 
 /** S3 folder for onboarding artefacts (uploads go through {@link S3Service.uploadCustomerFile}). */
@@ -31,9 +29,7 @@ const ONBOARDING_FOLDER = "onboarding-files";
 
 const ONBOARDING_PDF_DISPLAY_TITLE: Record<string, string> = {
   "01-client-registration.pdf": "Client registration",
-  "02-hmrc-64-8.pdf": "HMRC 64-8",
   "03-change-of-accountant.pdf": "Change of accountant",
-  "04-direct-debit.pdf": "Direct Debit instruction",
 };
 
 export type OnboardingFormPdfDownloadDto = {
@@ -71,7 +67,7 @@ export class CustomerOnboardingS3Service {
 
   /**
    * After `Customer` exists: `files` is used **only** for onboarding (invoices/statements/etc. use `documents`).
-   * Generates four step PDFs, uploads to S3 (`onboarding-files/{filename}.pdf` — no `documents/` subfolder) and inserts `files` rows with
+   * Generates the signable document PDFs, uploads to S3 (`onboarding-files/{filename}.pdf` — no `documents/` subfolder) and inserts `files` rows with
    * `s3_key` set. If the bucket is not configured, falls back to `FILE_STORAGE_ROOT` + `storage_relative_path`.
    * Same S3 keys as {@link syncCompletedOnboarding} so completion overwrites blobs; sync updates row metadata.
    */
@@ -227,7 +223,7 @@ export class CustomerOnboardingS3Service {
 
     const revived = reviveCustomerOnboarding(payload);
     const forPdf = await this.signatureHydrate.hydrate(customerId, revived);
-    // Always four PDFs — same HTML templates as staff preview (Playwright print).
+    // Registration + Change of accountant — same HTML templates as staff preview (Playwright print).
     for (const { formKey, filename } of ONBOARDING_DOCUMENT_FILES) {
       const body = await this.htmlPdf.renderStepToPdfBuffer(formKey, forPdf);
       const { fileKey } = await this.s3.uploadCustomerFile({
@@ -293,7 +289,7 @@ export class CustomerOnboardingS3Service {
   }
 
   /**
-   * Presigned S3 GET URLs for the four fixed onboarding step PDFs (`onboarding-files/01-…04-…`),
+   * Presigned S3 GET URLs for the fixed onboarding document PDFs (`onboarding-files/01-…03-…`),
    * for admin customer detail (preview/download). File rows are read under tenant RLS.
    */
   async getOnboardingFormPdfDownloadsForAdminDetail(customerId: string): Promise<OnboardingFormPdfDownloadDto[]> {

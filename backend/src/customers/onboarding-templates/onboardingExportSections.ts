@@ -1,10 +1,5 @@
 import type { CustomerOnboardingData } from "./customerOnboarding";
-import {
-  coerceOfficeNoted,
-  labelForOfficeApprovalStatus,
-  showCompaniesHouseAuthCode,
-  showHmrcAgentCodes,
-} from "./customerOnboarding";
+import { coerceOfficeNoted, labelForOfficeApprovalStatus } from "./customerOnboarding";
 
 export type OnboardingExportSection = {
   title: string;
@@ -41,6 +36,9 @@ export function buildOnboardingExportSections(data: CustomerOnboardingData): Onb
       { label: "Business Type", value: disp(data.company.type) },
       { label: "Nature of business", value: disp(data.company.nature_of_business) },
       { label: "Year end", value: disp(data.company.year_end) },
+      { label: "GSTIN", value: disp(data.company.gstin ?? "") },
+      { label: "PAN", value: disp(data.company.pan ?? "") },
+      { label: "Constitution", value: disp(data.company.constitution ?? "") },
       { label: "Registered address line 1", value: disp(data.company.registeredAddress.line1) },
       { label: "Registered city", value: disp(data.company.registeredAddress.city) },
       { label: "Registered postcode", value: disp(data.company.registeredAddress.postcode) },
@@ -118,9 +116,6 @@ export function buildOnboardingExportSections(data: CustomerOnboardingData): Onb
     title: "Tax Information",
     rows: [
       { label: "UTR", value: disp(data.tax.utr) },
-      ...(showCompaniesHouseAuthCode(data.company.type)
-        ? [{ label: "Auth code", value: disp(data.tax.auth_code) }]
-        : []),
       { label: "VAT number", value: disp(data.tax.vat_number) },
       { label: "VAT quarter", value: disp(data.tax.vat_quarter) },
       { label: "PAYE Office Ref", value: disp(data.tax.paye_ref) },
@@ -164,33 +159,6 @@ export function buildOnboardingExportSections(data: CustomerOnboardingData): Onb
     ],
   });
 
-  sections.push({
-    title: "Agent (64-8)",
-    rows: [
-      { label: "Name", value: disp(data.agent.name) },
-      { label: "Address", value: disp(data.agent.address) },
-      { label: "Postcode", value: disp(data.agent.postcode) },
-      { label: "Phone", value: disp(data.agent.phone) },
-      ...(showHmrcAgentCodes(data.company.type)
-        ? [
-            { label: "Agent code (SA)", value: disp(data.agent.agent_code_sa) },
-            { label: "Agent code (CT)", value: disp(data.agent.agent_code_ct) },
-          ]
-        : []),
-      { label: "Client reference", value: disp(data.agent.client_reference) },
-    ],
-  });
-
-  sections.push({
-    title: "Bank details",
-    rows: [
-      { label: "Account holder", value: disp(data.bank.account_holder_name) },
-      { label: "Account number", value: disp(data.bank.account_number) },
-      { label: "Sort code", value: disp(data.bank.sort_code) },
-      { label: "Bank address", value: disp(data.bank.bank_address) },
-    ],
-  });
-
   const paa = data.change_of_accountant.previous_accountant_address;
   sections.push({
     title: "Change of accountant \u2014 letter recipient",
@@ -200,18 +168,6 @@ export function buildOnboardingExportSections(data: CustomerOnboardingData): Onb
       { label: "City", value: disp(paa.city) },
       { label: "Postcode", value: disp(paa.postcode) },
       { label: "Country", value: disp(paa.country ?? "") },
-    ],
-  });
-
-  const a = data.authorization;
-  sections.push({
-    title: "Tax authorisations",
-    rows: [
-      { label: "Self assessment", value: yn(a.self_assessment) },
-      { label: "Partnership", value: yn(a.partnership) },
-      { label: "Trust", value: yn(a.trust) },
-      { label: "VAT", value: yn(a.vat) },
-      { label: "PAYE", value: yn(a.paye) },
     ],
   });
 
@@ -228,7 +184,7 @@ export function buildOnboardingExportSections(data: CustomerOnboardingData): Onb
       { label: "Address proof \u2013 Utility bill", value: yn(apf.utility_bill) },
       { label: "Address proof \u2013 Bank statement", value: yn(apf.bank_statement) },
       { label: "Online access \u2013 Companies House", value: yn(oa.companies_house) },
-      { label: "Online access \u2013 HMRC", value: yn(oa.hmrc) },
+      { label: "Online access \u2013 GST", value: yn(oa.gst) },
       { label: "Online access \u2013 PAYE", value: yn(oa.paye) },
       { label: "Online access \u2013 VAT", value: yn(oa.vat) },
       { label: "Online access \u2013 Bank", value: yn(oa.bank) },
@@ -241,9 +197,7 @@ export function buildOnboardingExportSections(data: CustomerOnboardingData): Onb
   });
 
   const cr = data.signatures.client_registration;
-  const h = data.signatures.hmrc_64_8;
   const ca = data.signatures.change_accountant;
-  const dd = data.signatures.direct_debit;
 
   sections.push({
     title: "Signatures \u2013 Client registration",
@@ -256,29 +210,11 @@ export function buildOnboardingExportSections(data: CustomerOnboardingData): Onb
   });
 
   sections.push({
-    title: "Signatures \u2013 HMRC 64-8",
-    rows: [
-      { label: "Name", value: disp(h.name) },
-      { label: "Date", value: disp(h.date) },
-      { label: "Signature", value: formatSignatureExportValue(h.signature) },
-    ],
-  });
-
-  sections.push({
     title: "Signatures \u2013 Change of accountant",
     rows: [
       { label: "Name", value: disp(ca.name) },
       { label: "Date", value: disp(ca.date) },
       { label: "Signature", value: formatSignatureExportValue(ca.signature) },
-    ],
-  });
-
-  sections.push({
-    title: "Signatures \u2013 Direct debit",
-    rows: [
-      { label: "Name", value: disp(dd.name) },
-      { label: "Date", value: disp(dd.date) },
-      { label: "Signature", value: formatSignatureExportValue(dd.signature) },
     ],
   });
 

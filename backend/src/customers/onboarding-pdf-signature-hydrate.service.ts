@@ -54,20 +54,10 @@ export class OnboardingPdfSignatureHydrateService {
         fileRepo,
         next.signatures.client_registration.signature,
       );
-      next.signatures.hmrc_64_8.signature = await this.resolveOne(
-        customerId,
-        fileRepo,
-        next.signatures.hmrc_64_8.signature,
-      );
       next.signatures.change_accountant.signature = await this.resolveOne(
         customerId,
         fileRepo,
         next.signatures.change_accountant.signature,
-      );
-      next.signatures.direct_debit.signature = await this.resolveOne(
-        customerId,
-        fileRepo,
-        next.signatures.direct_debit.signature,
       );
       return next;
     });
