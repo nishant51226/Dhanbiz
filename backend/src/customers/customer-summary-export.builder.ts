@@ -5,7 +5,6 @@ import {
   mapMergedOnboarding,
   type LatestSubmissionExport,
 } from "./customers-list-export.mapper";
-import { formatDisplayDate } from "../format-display-date.util.js";
 
 /** Maps older list-export column ids to summary catalog ids. */
 export const LEGACY_LIST_EXPORT_COLUMN_ALIASES: Record<string, string> = {
@@ -63,10 +62,6 @@ function formatTs(d: Date | string | undefined): string {
   if (!d) return "";
   if (d instanceof Date) return d.toISOString();
   return String(d);
-}
-
-function formatDay(iso: string | Date | undefined): string {
-  return formatDisplayDate(iso);
 }
 
 function formatTurnover(v: unknown): string {
@@ -150,14 +145,8 @@ function cellValue(
   const trader = asRecord(company?.["traderAddress"] ?? company?.["trader_address"]);
   const tax = asRecord(merged.tax);
   const contact = asRecord(merged.contact);
-  const agent = asRecord(merged.agent);
-  const bank = asRecord(merged.bank);
   const coa = asRecord(merged.change_of_accountant);
   const prevAddr = asRecord(coa?.["previous_accountant_address"] ?? coa?.["previousAccountantAddress"]);
-  const auth = asRecord(merged.authorization);
-  const ch = asRecord(merged.companies_house);
-  const accounts = asRecord(ch?.["accounts"]);
-  const cs = asRecord(ch?.["confirmation_statement"]) ?? asRecord(ch?.["annual_return"]);
   const sv = asRecord(merged.services);
   const payroll = sv ? asRecord(sv.payroll) : null;
   const directors = Array.isArray(merged.directors) ? merged.directors : [];
@@ -183,26 +172,7 @@ function cellValue(
     pickStr(contact, ["email"]),
   );
 
-  const authCode = firstNonEmpty(
-    pickStr(merged, ["auth_code"]),
-    pickStr(merged, ["authCode"]),
-    pickStr(merged, ["companies_house_auth_code"]),
-    pickStr(tax, ["auth_code"]),
-  );
-
   const filingMonth = firstNonEmpty(pickStr(merged, ["filing_month"]), pickStr(merged, ["filingMonth"]));
-
-  const accountsDue = firstNonEmpty(
-    accounts?.["next_accounts_due_on"] != null ? formatDay(String(accounts["next_accounts_due_on"])) : "",
-    pickStr(merged, ["accounts_fd"]),
-    pickStr(merged, ["accountsFd"]),
-  );
-
-  const confirmationDue = firstNonEmpty(
-    cs?.["next_due"] != null ? formatDay(String(cs["next_due"])) : "",
-    pickStr(merged, ["cs"]),
-    pickStr(merged, ["confirmation_stmt"]),
-  );
 
   const vatRegDate = firstNonEmpty(
     pickStr(tax, ["vat_registration_date"]),
@@ -283,10 +253,12 @@ function cellValue(
         : "";
     case "tradingCountry":
       return trader ? pickStr(trader, ["country"]) : "";
-    case "companyStatus":
-      return firstNonEmpty(pickStr(company, ["company_status"]), pickStr(company, ["companyStatus"]));
-    case "jurisdiction":
-      return pickStr(company, ["jurisdiction"]);
+    case "gstin":
+      return pickStr(company, ["gstin"]);
+    case "pan":
+      return pickStr(company, ["pan"]);
+    case "constitution":
+      return pickStr(company, ["constitution"]);
     case "vatNumber":
       return derived.vatNumber;
     case "vatRegDate":
@@ -305,44 +277,14 @@ function cellValue(
       return pickStr(tax, ["paye_ref"]);
     case "companyRegNo":
       return derived.companyRegNo;
-    case "companyRegDate":
-      return company?.["date_of_creation"] != null ? formatDay(String(company["date_of_creation"])) : "";
     case "chEmail":
       return chEmail;
     case "utr":
       return derived.utr;
-    case "authCode":
-      return authCode;
     case "yearEnd":
       return derived.yearEnd;
     case "filingMonth":
       return filingMonth;
-    case "accountsFilingDue":
-      return accountsDue;
-    case "confirmationStatement":
-      return confirmationDue;
-    case "agentName":
-      return pickStr(agent, ["name"]);
-    case "agentAddress":
-      return pickStr(agent, ["address"]);
-    case "agentPostcode":
-      return pickStr(agent, ["postcode"]);
-    case "agentPhone":
-      return pickStr(agent, ["phone"]);
-    case "agentCodeSa":
-      return pickStr(agent, ["agent_code_sa"]);
-    case "agentCodeCt":
-      return pickStr(agent, ["agent_code_ct"]);
-    case "agentClientReference":
-      return firstNonEmpty(pickStr(agent, ["client_reference"]), pickStr(agent, ["clientReference"]));
-    case "bankAccountHolder":
-      return pickStr(bank, ["account_holder_name"]);
-    case "bankSortCode":
-      return pickStr(bank, ["sort_code"]);
-    case "bankAccountNumber":
-      return pickStr(bank, ["account_number"]);
-    case "bankAddress":
-      return pickStr(bank, ["bank_address"]);
     case "previousAccountant":
       return pickStr(coa, ["previous_accountant_name"]);
     case "previousAccountantAddress": {
@@ -355,16 +297,6 @@ function cellValue(
       ].filter((p) => p.trim());
       return parts.join(", ");
     }
-    case "taxAuthSelfAssessment":
-      return yn(auth?.["self_assessment"] ?? auth?.["selfAssessment"]);
-    case "taxAuthPartnership":
-      return yn(auth?.["partnership"]);
-    case "taxAuthTrust":
-      return yn(auth?.["trust"]);
-    case "taxAuthVat":
-      return yn(auth?.["vat"]);
-    case "taxAuthPaye":
-      return yn(auth?.["paye"]);
     case "servicesInPack":
       return derived.servicesInPack || servicesInPackList(merged);
     case "director1Name":

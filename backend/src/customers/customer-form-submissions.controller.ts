@@ -37,7 +37,6 @@ type BatchStatusesBody = { customerIds?: string[] };
 const DOCUSEAL_SIGNATURE_TARGETS = new Set<string>([
   "client_registration",
   "change_accountant",
-  "direct_debit",
 ]);
 
 type SendSignatureEmailBody = {
